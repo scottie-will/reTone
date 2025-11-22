@@ -53,19 +53,6 @@
             line-height: 1.6;
             margin-top: 12px;
         }
-        .rewrite-button {
-            margin-top: 10px;
-            padding: 6px 12px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .rewrite-button:hover {
-            background: #0056b3;
-        }
         .instructions {
             background: #fff3cd;
             padding: 15px;
@@ -79,7 +66,13 @@
     <h1>Test Social Media Posts</h1>
     
     <div class="instructions">
-        <strong>Instructions:</strong> Load the extension, initialize the model, enable rewriting, and test on these sample posts.
+        <strong>Instructions:</strong> 
+        1. Load the extension in Chrome
+        2. Initialize the model in the popup
+        3. Select a rewriting mode
+        4. Toggle "Enable Rewriting" on
+        5. Rewrite buttons will appear below each post
+        6. Click "Rewrite" to transform the text
     </div>
 
     <div class="post">
@@ -93,7 +86,6 @@
         <div class="post-content">
             I'm absolutely OBSESSED with this new productivity hack! It's literally changed my life and I can't even begin to describe how amazing it feels! Drop a comment if you want to know more!
         </div>
-        <button class="rewrite-button">Rewrite (Manual Mode)</button>
     </div>
 
     <div class="post">
@@ -107,7 +99,6 @@
         <div class="post-content">
             Thrilled to announce that I've been promoted to Senior Vice President! This journey has been absolutely incredible and I'm so humbled by the opportunity to leverage my synergies and drive transformational change at scale. Let's disrupt the paradigm together!
         </div>
-        <button class="rewrite-button">Rewrite (Manual Mode)</button>
     </div>
 
     <div class="post">
@@ -121,7 +112,6 @@
         <div class="post-content">
             Hot take: AI is going to LITERALLY revolutionize EVERYTHING and if you're not on board RIGHT NOW you're going to be left behind! This is the most important moment in human history!!!
         </div>
-        <button class="rewrite-button">Rewrite (Manual Mode)</button>
     </div>
 
     <div class="post">
@@ -135,7 +125,6 @@
         <div class="post-content">
             I'm so blessed to have an amazing team that believes in me! Just a girl from a small town who worked hard and stayed humble. Dreams really do come true if you just believe in yourself! Never give up on your journey!
         </div>
-        <button class="rewrite-button">Rewrite (Manual Mode)</button>
     </div>
 
     <div class="post">
@@ -149,7 +138,6 @@
         <div class="post-content">
             Our startup is absolutely crushing it right now! We're leveraging cutting-edge AI to disrupt the B2B SaaS space with our revolutionary platform that empowers stakeholders to synergize their workflows and maximize ROI through innovative solutions!
         </div>
-        <button class="rewrite-button">Rewrite (Manual Mode)</button>
     </div>
 
     <div class="post">
@@ -163,18 +151,7 @@
         <div class="post-content">
             Just finished my 5th Zoom call today and honestly I'm SO TIRED but also SO GRATEFUL for this opportunity to collaborate with such an AMAZING team! Work-life balance is hard but we're all in this together! Let's keep pushing!
         </div>
-        <button class="rewrite-button">Rewrite (Manual Mode)</button>
     </div>
-
-    <script>
-        // These buttons are placeholders for manual mode testing
-        // In auto mode, the extension will automatically rewrite the text
-        document.querySelectorAll('.rewrite-button').forEach(button => {
-            button.addEventListener('click', () => {
-                alert('In manual mode, the extension would show a rewrite option here. In auto mode, text is rewritten automatically.');
-            });
-        });
-    </script>
 </body>
 </html>
 

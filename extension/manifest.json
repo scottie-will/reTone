@@ -20,9 +20,20 @@
     {
       "matches": [
         "https://www.reddit.com/*",
-        "https://www.linkedin.com/*"
+        "https://www.linkedin.com/*",
+        "file:///*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content/adapters/base-adapter.js",
+        "content/adapters/testpage-adapter.js",
+        "content/adapters/reddit-adapter.js",
+        "content/adapters/linkedin-adapter.js",
+        "content/modules/dom-scanner.js",
+        "content/modules/button-manager.js",
+        "content/modules/text-replacer.js",
+        "content/modules/message-handler.js",
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
@@ -43,7 +54,11 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["llm-worker.js", "prompts/prompts.js"],
+      "resources": [
+        "llm-worker.js", 
+        "prompts/prompts.js",
+        "content/styles/button.css"
+      ],
       "matches": ["<all_urls>"]
     }
   ],
