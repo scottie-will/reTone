@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Rewriter</title>
+    <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Social Media Rewriter</h1>
+        
+        <div class="control-group">
+            <label class="toggle-container">
+                <span>Enable Rewriting</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="enableToggle">
+                    <span class="slider"></span>
+                </div>
+            </label>
+        </div>
+
+        <div class="control-group">
+            <label for="modeSelect">Rewriting Mode:</label>
+            <select id="modeSelect" disabled>
+                <option value="neutralize">Neutralize</option>
+                <option value="decringe">De-cringe</option>
+                <option value="debuzzword">De-buzzword</option>
+                <option value="dehumblebrag">De-humblebrag</option>
+                <option value="calm">Calm mode</option>
+                <option value="facts">Just the Facts</option>
+            </select>
+        </div>
+
+        <div class="status" id="status">
+            Extension disabled
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
+
