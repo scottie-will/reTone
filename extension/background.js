@@ -97,9 +97,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         break;
         
       case 'REWRITE_COMPLETE':
-        // Forward to content script that requested it
-        // TODO: Implement routing
+        // Forward to popup or content script
         console.log('Rewrite complete:', data);
+        notifyPopups({ type: 'REWRITE_COMPLETE', ...data });
+        // TODO: Also forward to content script if needed
         break;
         
       case 'INIT_ERROR':
@@ -164,17 +165,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'REWRITE_TEXT':
+      console.log('Background handling REWRITE_TEXT:', message);
       if (!extensionState.modelLoaded) {
         sendResponse({ success: false, error: 'Model not loaded' });
       } else {
         // Forward to offscreen document
+        const payload = {
+          text: message.text,
+          mode: message.mode || extensionState.rewriteMode,
+          requestId: message.requestId
+        };
+        console.log('Forwarding to offscreen with payload:', payload);
+        
         chrome.runtime.sendMessage({
           type: 'REWRITE_TEXT',
-          payload: {
-            text: message.text,
-            mode: extensionState.rewriteMode,
-            requestId: message.requestId
-          }
+          payload: payload
         }).then(() => {
           sendResponse({ success: true });
         }).catch((error) => {

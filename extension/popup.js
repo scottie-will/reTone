@@ -9,6 +9,10 @@ const statusDiv = document.getElementById('status');
 const progressContainer = document.getElementById('progressContainer');
 const progressBar = document.getElementById('progressBar');
 const progressText = document.getElementById('progressText');
+const testSection = document.getElementById('testSection');
+const testInput = document.getElementById('testInput');
+const testButton = document.getElementById('testButton');
+const testOutput = document.getElementById('testOutput');
 
 // Load current state
 chrome.runtime.sendMessage({ type: 'GET_STATE' }, (state) => {
@@ -23,8 +27,26 @@ chrome.runtime.onMessage.addListener((message) => {
     updateUI(message.state);
   } else if (message.type === 'INIT_PROGRESS') {
     updateProgress(message.progress, message.percent);
+  } else if (message.type === 'REWRITE_COMPLETE') {
+    handleRewriteComplete(message);
   }
 });
+
+function handleRewriteComplete(data) {
+  if (data.requestId === window.pendingRewriteRequest) {
+    testButton.disabled = false;
+    testButton.textContent = 'Test Rewrite';
+    
+    if (data.success) {
+      testOutput.style.display = 'block';
+      testOutput.textContent = data.rewrittenText;
+    } else {
+      alert('Rewrite failed: ' + data.error);
+    }
+    
+    window.pendingRewriteRequest = null;
+  }
+}
 
 // Initialize model button
 initButton.addEventListener('click', () => {
@@ -87,6 +109,42 @@ behaviorModeSelect.addEventListener('change', () => {
   );
 });
 
+// Handle test rewrite button
+testButton.addEventListener('click', () => {
+  const text = testInput.value.trim();
+  
+  if (!text) {
+    alert('Please enter some text to test');
+    return;
+  }
+  
+  testButton.disabled = true;
+  testButton.textContent = 'Rewriting...';
+  testOutput.style.display = 'none';
+  
+  const requestId = Date.now().toString();
+  const mode = rewriteModeSelect.value;
+  
+  // Store request to handle response
+  window.pendingRewriteRequest = requestId;
+  
+  chrome.runtime.sendMessage(
+    { 
+      type: 'REWRITE_TEXT',
+      text: text,
+      mode: mode,
+      requestId: requestId
+    },
+    (response) => {
+      if (!response || !response.success) {
+        testButton.disabled = false;
+        testButton.textContent = 'Test Rewrite';
+        alert('Failed to send rewrite request: ' + (response?.error || 'Unknown error'));
+      }
+    }
+  );
+});
+
 function updateUI(state) {
   // Update model initialization state
   if (state.modelLoaded) {
@@ -98,6 +156,9 @@ function updateUI(state) {
     enableToggle.disabled = false;
     rewriteModeSelect.disabled = false;
     behaviorModeSelect.disabled = false;
+    
+    // Show test section
+    testSection.style.display = 'block';
   } else {
     initButton.textContent = 'Initialize Model';
     initButton.disabled = false;
@@ -106,6 +167,9 @@ function updateUI(state) {
     enableToggle.disabled = true;
     rewriteModeSelect.disabled = true;
     behaviorModeSelect.disabled = true;
+    
+    // Hide test section
+    testSection.style.display = 'none';
   }
   
   // Update values

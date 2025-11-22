@@ -170,3 +170,62 @@ select:disabled {
     margin-top: 4px;
 }
 
+.test-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e9ecef;
+}
+
+.test-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.test-section textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.test-button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.test-button:hover:not(:disabled) {
+    background: #218838;
+}
+
+.test-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.test-output {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    border: 1px solid #e9ecef;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+

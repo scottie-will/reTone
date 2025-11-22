@@ -12,6 +12,7 @@ console.log('LLM Worker initialized');
 
 // Listen for messages from main thread
 self.addEventListener('message', async (event) => {
+  console.log('Worker received message:', event.data);
   const { type, payload } = event.data;
 
   switch (type) {
@@ -20,7 +21,16 @@ self.addEventListener('message', async (event) => {
       break;
 
     case 'REWRITE_TEXT':
-      await rewriteText(payload);
+      if (!payload) {
+        console.error('REWRITE_TEXT received with no payload');
+        self.postMessage({
+          type: 'REWRITE_COMPLETE',
+          success: false,
+          error: 'No payload provided'
+        });
+      } else {
+        await rewriteText(payload);
+      }
       break;
 
     default:
@@ -96,19 +106,64 @@ async function initializeModel(config = {}) {
   }
 }
 
-async function rewriteText({ text, mode, requestId }) {
+async function rewriteText(payload) {
+  console.log('rewriteText called with:', payload);
+  
+  if (!payload || typeof payload !== 'object') {
+    console.error('Invalid payload:', payload);
+    self.postMessage({
+      type: 'REWRITE_COMPLETE',
+      success: false,
+      error: 'Invalid payload'
+    });
+    return;
+  }
+  
+  const { text, mode, requestId } = payload;
+  
+  if (!engine) {
+    self.postMessage({
+      type: 'REWRITE_COMPLETE',
+      requestId,
+      success: false,
+      error: 'Model not initialized'
+    });
+    return;
+  }
+
   try {
-    // TODO: Use WebLLM to rewrite text based on mode
+    console.log(`Rewriting text with mode: ${mode}`);
+    console.log('Text to rewrite:', text);
+    
     const prompt = buildPrompt(text, mode);
-    // const result = await engine.chat.completions.create({ ... });
+    console.log('Prompt:', prompt);
+    
+    // Use WebLLM to generate rewrite
+    const messages = [
+      {
+        role: 'user',
+        content: prompt
+      }
+    ];
+
+    const response = await engine.chat.completions.create({
+      messages,
+      temperature: 0.7,
+      max_tokens: 256
+    });
+
+    const rewrittenText = response.choices[0].message.content;
+    console.log('Rewrite complete:', rewrittenText);
     
     self.postMessage({
       type: 'REWRITE_COMPLETE',
       requestId,
       success: true,
-      rewrittenText: text // Placeholder
+      originalText: text,
+      rewrittenText: rewrittenText
     });
   } catch (error) {
+    console.error('Rewrite error:', error);
     self.postMessage({
       type: 'REWRITE_COMPLETE',
       requestId,
