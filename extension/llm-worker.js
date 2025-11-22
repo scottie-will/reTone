@@ -29,7 +29,12 @@ self.addEventListener('message', async (event) => {
 async function initializeModel(config) {
   try {
     // TODO: Initialize WebLLM engine here
-    // const engine = await webllm.CreateMLCEngine(...)
+    // Using model: "SmolLM2-360M-Instruct-q4f16_1-MLC"
+    // const engine = await webllm.CreateMLCEngine("SmolLM2-360M-Instruct-q4f16_1-MLC", {
+    //   initProgressCallback: (progress) => {
+    //     self.postMessage({ type: 'INIT_PROGRESS', progress: progress.text });
+    //   }
+    // });
     
     self.postMessage({
       type: 'MODEL_INITIALIZED',

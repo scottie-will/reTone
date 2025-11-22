@@ -1,0 +1,64 @@
+Model Information
+=================
+
+Current Model: SmolLM2-360M-Instruct-q4f16_1-MLC
+
+Why SmolLM2-360M?
+-----------------
+- Smallest viable model: Only 360 million parameters
+- Very small size: ~200-300MB (4-bit quantization)
+- Extremely fast inference: Lightweight and responsive
+- Purpose-built for instruction tasks: Fine-tuned for following prompts
+- Efficient: Designed for on-device/edge deployment
+- From HuggingFace: Well-maintained by HuggingFaceTB team
+- WebLLM optimized: Pre-compiled MLC version available
+- q4f16_1 quantization: Good balance of quality and size
+- Perfect for simple rewrites: Handles text transformation well despite small size
+- Lowest friction: Fastest download and initialization
+
+Alternative Models (if needed):
+--------------------------------
+- SmolLM2-1.7B-Instruct-q4f16_1-MLC (larger SmolLM2, better quality, ~1GB)
+- Llama-3.2-1B-Instruct-q4f16_1-MLC (Meta's model, high quality, ~800MB)
+- Llama-3.2-3B-Instruct-q4f16_1-MLC (larger Llama, more capable, ~2GB)
+- Phi-3-mini-4k-instruct-q4f16_1-MLC (Microsoft's model, best quality, ~2.5GB)
+- Qwen3-0.6B-q0f32-MLC (full precision, multilingual, ~600MB)
+- Qwen2.5-0.5B-Instruct-q4f16_1-MLC (multilingual, ~400-500MB)
+- TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC (older option, ~700MB)
+
+Model Name Format:
+------------------
+Format: [Model]-[Size]-[Quantization]-MLC
+- Model: Qwen3, Qwen2.5, TinyLlama, etc.
+- Size: 0.6B, 0.5B, 1.1B, etc. (number of parameters)
+- Quantization: 
+  - q0f32: No quantization, full 32-bit floats (highest quality, larger size)
+  - q4f16_1: 4-bit weights, 16-bit activations (smaller, faster)
+  - q4f32_1: 4-bit weights, 32-bit activations (balanced)
+- MLC: MLC-AI compiled version
+
+Storage:
+--------
+After initialization, model is stored in:
+- Browser Cache Storage (not regular disk files)
+- Location: Chrome DevTools → Application → Cache Storage → webllm/
+- Size: ~200-300MB for SmolLM2-360M-Instruct-q4f16_1
+- Persistence: Cached until manually cleared or evicted
+
+Performance Notes:
+------------------
+- First load: 30-90 seconds (downloading model - very small!)
+- Subsequent loads: 2-3 seconds (from cache)
+- Inference speed: 40-80 tokens/second (very fast due to small size)
+- Memory usage: ~500MB-800MB RAM during inference
+- GPU required: WebGPU-enabled browser (Chrome 113+, Edge 113+)
+- Trade-off: Lower quality than larger models, but extremely fast and lightweight
+- Best choice for speed/size: Lowest friction, fastest experience
+
+Fallback Options:
+-----------------
+If WebGPU not available:
+1. Show user message explaining browser/hardware limitation
+2. Implement rule-based rewriting (regex patterns)
+3. Suggest cloud API option (optional monetization path)
+

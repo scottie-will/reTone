@@ -1,4 +1,4 @@
-Rewrite the following text to remove buzzwords, jargon, corporate speak, and meaningless filler phrases. Use clear, direct language, be concise:
+Rewrite the following text to remove buzzwords, jargon, corporate speak, and meaningless filler phrases. Use clear, direct language, be concise, sound less corporate:
 
 "{TEXT}"
 

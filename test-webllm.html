@@ -81,8 +81,8 @@
     </style>
 </head>
 <body>
-    <h1>WebLLM + TinyLlama Test</h1>
-    <p>This page tests loading TinyLlama via WebLLM and performing basic rewriting tasks.</p>
+    <h1>WebLLM + SmolLM2 Test</h1>
+    <p>This page tests loading SmolLM2-360M via WebLLM and performing basic rewriting tasks.</p>
     
     <div id="status" class="status">Not initialized</div>
     
@@ -126,7 +126,7 @@
                 initButton.disabled = true;
 
                 engine = await webllm.CreateMLCEngine(
-                    "TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC",
+                    "SmolLM2-360M-Instruct-q4f16_1-MLC",
                     {
                         initProgressCallback: (progress) => {
                             statusDiv.textContent = `Loading: ${progress.text}`;
@@ -187,7 +187,7 @@
                 const rewrittenText = reply.choices[0].message.content;
 
                 outputDiv.style.display = 'block';
-                outputDiv.textContent = `Mode: ${selectedMode}\n\nOriginal:\n${input}\n\n---\n\nRewritten:\n${rewrittenText}`;
+                outputDiv.textContent = rewrittenText;
 
                 statusDiv.className = 'status success';
                 statusDiv.textContent = `Rewrite complete using ${selectedMode} mode!`;
