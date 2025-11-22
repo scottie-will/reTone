@@ -1,0 +1,5 @@
+Rewrite the following text to remove buzzwords, jargon, corporate speak, and meaningless filler phrases. Use clear, direct language, be concise:
+
+"{TEXT}"
+
+Rewritten version:

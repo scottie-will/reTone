@@ -51,6 +51,26 @@
         button:hover:not(:disabled) {
             background: #0056b3;
         }
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: 10px 0;
+            background: white;
+            cursor: pointer;
+        }
+        select:disabled {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
         .output {
             margin-top: 20px;
             padding: 15px;
@@ -71,6 +91,18 @@
         <textarea id="input" placeholder="Enter text to rewrite...">I'm absolutely OBSESSED with this new productivity hack! It's literally changed my life and I can't even begin to describe how amazing it feels! Drop a comment if you want to know more!</textarea>
     </div>
     
+    <div>
+        <label for="modeSelect">Rewriting Mode:</label>
+        <select id="modeSelect">
+            <option value="neutralize">Neutralize</option>
+            <option value="decringe">De-cringe</option>
+            <option value="debuzzword">De-buzzword</option>
+            <option value="dehumblebrag">De-humblebrag</option>
+            <option value="calm">Calm mode</option>
+            <option value="facts">Just the Facts</option>
+        </select>
+    </div>
+    
     <button id="initButton" onclick="initModel()">Initialize Model</button>
     <button id="rewriteButton" onclick="rewriteText()" disabled>Rewrite Text</button>
     
@@ -78,6 +110,7 @@
 
     <script type="module">
         import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+        import { buildPrompt } from './extension/prompts/prompts.js';
 
         let engine = null;
         window.webllm = webllm;
@@ -114,6 +147,7 @@
 
         window.rewriteText = async function() {
             const input = document.getElementById('input').value;
+            const modeSelect = document.getElementById('modeSelect');
             const outputDiv = document.getElementById('output');
             const statusDiv = document.getElementById('status');
             const rewriteButton = document.getElementById('rewriteButton');
@@ -129,16 +163,13 @@
             }
 
             try {
+                const selectedMode = modeSelect.value;
                 statusDiv.className = 'status loading';
-                statusDiv.textContent = 'Rewriting...';
+                statusDiv.textContent = `Rewriting using ${selectedMode} mode...`;
                 rewriteButton.disabled = true;
                 outputDiv.style.display = 'none';
 
-                const prompt = `Rewrite the following text into a clear, neutral, non-dramatic version without slang, desperation, or cringe. Keep it concise and professional:
-
-"${input}"
-
-Rewritten version:`;
+                const prompt = buildPrompt(input, selectedMode);
 
                 const messages = [
                     {
@@ -156,10 +187,10 @@ Rewritten version:`;
                 const rewrittenText = reply.choices[0].message.content;
 
                 outputDiv.style.display = 'block';
-                outputDiv.textContent = `Original:\n${input}\n\n---\n\nRewritten:\n${rewrittenText}`;
+                outputDiv.textContent = `Mode: ${selectedMode}\n\nOriginal:\n${input}\n\n---\n\nRewritten:\n${rewrittenText}`;
 
                 statusDiv.className = 'status success';
-                statusDiv.textContent = 'Rewrite complete!';
+                statusDiv.textContent = `Rewrite complete using ${selectedMode} mode!`;
                 rewriteButton.disabled = false;
             } catch (error) {
                 statusDiv.className = 'status error';

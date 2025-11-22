@@ -1,0 +1,5 @@
+Rewrite the following text to remove humble bragging, false modesty, and indirect self-promotion. Be direct and honest:
+
+"{TEXT}"
+
+Rewritten version:

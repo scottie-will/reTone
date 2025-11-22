@@ -1,0 +1,5 @@
+Rewrite the following text to include only factual information, removing opinions, emotions, speculation, and subjective statements:
+
+"{TEXT}"
+
+Rewritten version:

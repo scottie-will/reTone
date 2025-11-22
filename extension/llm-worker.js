@@ -4,6 +4,8 @@
 // TODO: This will be implemented in Step 4
 // For now, this is a skeleton to show the architecture
 
+import { buildPrompt } from './prompts/prompts.js';
+
 console.log('LLM Worker initialized');
 
 // Listen for messages from main thread
@@ -45,7 +47,7 @@ async function initializeModel(config) {
 async function rewriteText({ text, mode, requestId }) {
   try {
     // TODO: Use WebLLM to rewrite text based on mode
-    // const prompt = buildPrompt(text, mode);
+    const prompt = buildPrompt(text, mode);
     // const result = await engine.chat.completions.create({ ... });
     
     self.postMessage({
@@ -62,18 +64,5 @@ async function rewriteText({ text, mode, requestId }) {
       error: error.message
     });
   }
-}
-
-function buildPrompt(text, mode) {
-  const prompts = {
-    neutralize: `Rewrite the following text into a clear, neutral, non-dramatic version:\n\n"${text}"\n\nRewritten:`,
-    decringe: `Rewrite the following text to remove cringe, excessive enthusiasm, and awkwardness:\n\n"${text}"\n\nRewritten:`,
-    debuzzword: `Rewrite the following text to remove buzzwords, jargon, and corporate speak:\n\n"${text}"\n\nRewritten:`,
-    dehumblebrag: `Rewrite the following text to remove humble bragging and false modesty:\n\n"${text}"\n\nRewritten:`,
-    calm: `Rewrite the following text in a calm, measured tone without drama or urgency:\n\n"${text}"\n\nRewritten:`,
-    facts: `Rewrite the following text to include only factual information, removing opinions and emotions:\n\n"${text}"\n\nRewritten:`
-  };
-  
-  return prompts[mode] || prompts.neutralize;
 }
 
