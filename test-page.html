@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Social Media Posts</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .post {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        .username {
+            font-weight: 600;
+            color: #333;
+        }
+        .platform {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+        }
+        .post-content {
+            color: #333;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+        .rewrite-button {
+            margin-top: 10px;
+            padding: 6px 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .rewrite-button:hover {
+            background: #0056b3;
+        }
+        .instructions {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Social Media Posts</h1>
+    
+    <div class="instructions">
+        <strong>Instructions:</strong> Load the extension, initialize the model, enable rewriting, and test on these sample posts.
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="avatar">JD</div>
+            <div>
+                <div class="username">John Doe</div>
+                <span class="platform">Reddit • r/productivity</span>
+            </div>
+        </div>
+        <div class="post-content">
+            I'm absolutely OBSESSED with this new productivity hack! It's literally changed my life and I can't even begin to describe how amazing it feels! Drop a comment if you want to know more!
+        </div>
+        <button class="rewrite-button">Rewrite (Manual Mode)</button>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="avatar">SM</div>
+            <div>
+                <div class="username">Sarah Martinez</div>
+                <span class="platform">LinkedIn</span>
+            </div>
+        </div>
+        <div class="post-content">
+            Thrilled to announce that I've been promoted to Senior Vice President! This journey has been absolutely incredible and I'm so humbled by the opportunity to leverage my synergies and drive transformational change at scale. Let's disrupt the paradigm together!
+        </div>
+        <button class="rewrite-button">Rewrite (Manual Mode)</button>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="avatar">MJ</div>
+            <div>
+                <div class="username">Mike Johnson</div>
+                <span class="platform">Reddit • r/technology</span>
+            </div>
+        </div>
+        <div class="post-content">
+            Hot take: AI is going to LITERALLY revolutionize EVERYTHING and if you're not on board RIGHT NOW you're going to be left behind! This is the most important moment in human history!!!
+        </div>
+        <button class="rewrite-button">Rewrite (Manual Mode)</button>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="avatar">EB</div>
+            <div>
+                <div class="username">Emily Brown</div>
+                <span class="platform">LinkedIn</span>
+            </div>
+        </div>
+        <div class="post-content">
+            I'm so blessed to have an amazing team that believes in me! Just a girl from a small town who worked hard and stayed humble. Dreams really do come true if you just believe in yourself! Never give up on your journey!
+        </div>
+        <button class="rewrite-button">Rewrite (Manual Mode)</button>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="avatar">TC</div>
+            <div>
+                <div class="username">Tom Chen</div>
+                <span class="platform">Reddit • r/startups</span>
+            </div>
+        </div>
+        <div class="post-content">
+            Our startup is absolutely crushing it right now! We're leveraging cutting-edge AI to disrupt the B2B SaaS space with our revolutionary platform that empowers stakeholders to synergize their workflows and maximize ROI through innovative solutions!
+        </div>
+        <button class="rewrite-button">Rewrite (Manual Mode)</button>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <div class="avatar">AL</div>
+            <div>
+                <div class="username">Alex Lee</div>
+                <span class="platform">LinkedIn</span>
+            </div>
+        </div>
+        <div class="post-content">
+            Just finished my 5th Zoom call today and honestly I'm SO TIRED but also SO GRATEFUL for this opportunity to collaborate with such an AMAZING team! Work-life balance is hard but we're all in this together! Let's keep pushing!
+        </div>
+        <button class="rewrite-button">Rewrite (Manual Mode)</button>
+    </div>
+
+    <script>
+        // These buttons are placeholders for manual mode testing
+        // In auto mode, the extension will automatically rewrite the text
+        document.querySelectorAll('.rewrite-button').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('In manual mode, the extension would show a rewrite option here. In auto mode, text is rewritten automatically.');
+            });
+        });
+    </script>
+</body>
+</html>
+

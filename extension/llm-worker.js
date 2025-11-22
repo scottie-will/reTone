@@ -1,10 +1,12 @@
 // LLM Worker
 // Runs WebLLM in a Web Worker to keep UI responsive
 
-// TODO: This will be implemented in Step 4
-// For now, this is a skeleton to show the architecture
-
+// Import WebLLM from local node_modules
+import * as webllm from './node_modules/@mlc-ai/web-llm/lib/index.js';
 import { buildPrompt } from './prompts/prompts.js';
+
+let engine = null;
+let isInitializing = false;
 
 console.log('LLM Worker initialized');
 
@@ -26,26 +28,71 @@ self.addEventListener('message', async (event) => {
   }
 });
 
-async function initializeModel(config) {
+async function initializeModel(config = {}) {
+  // Prevent multiple simultaneous initializations
+  if (isInitializing) {
+    console.log('Model initialization already in progress');
+    return;
+  }
+
+  // If already initialized, notify and return
+  if (engine) {
+    self.postMessage({
+      type: 'MODEL_INITIALIZED',
+      success: true,
+      cached: true
+    });
+    return;
+  }
+
+  isInitializing = true;
+
   try {
-    // TODO: Initialize WebLLM engine here
-    // Using model: "SmolLM2-360M-Instruct-q4f16_1-MLC"
-    // const engine = await webllm.CreateMLCEngine("SmolLM2-360M-Instruct-q4f16_1-MLC", {
-    //   initProgressCallback: (progress) => {
-    //     self.postMessage({ type: 'INIT_PROGRESS', progress: progress.text });
-    //   }
-    // });
+    console.log('Starting WebLLM model initialization...');
+    
+    const modelId = config.modelId || 'SmolLM2-360M-Instruct-q4f16_1-MLC';
+    
+    self.postMessage({
+      type: 'INIT_PROGRESS',
+      progress: 'Starting model download...',
+      percent: 0
+    });
+
+    // Create WebLLM engine
+    engine = await webllm.CreateMLCEngine(modelId, {
+      initProgressCallback: (progress) => {
+        console.log('Init progress:', progress);
+        
+        self.postMessage({
+          type: 'INIT_PROGRESS',
+          progress: progress.text || 'Loading model...',
+          percent: progress.progress || 0
+        });
+      }
+    });
+
+    console.log('Model initialized successfully');
     
     self.postMessage({
       type: 'MODEL_INITIALIZED',
-      success: true
+      success: true,
+      cached: false,
+      modelId: modelId
     });
+
   } catch (error) {
+    console.error('Model initialization failed:', error);
+    
+    engine = null;
+    
     self.postMessage({
       type: 'MODEL_INITIALIZED',
       success: false,
-      error: error.message
+      error: error.message || 'Failed to initialize model',
+      details: error.toString()
     });
+  } finally {
+    isInitializing = false;
   }
 }
 

@@ -5,7 +5,8 @@
   "description": "Rewrite social media posts to remove cringe, buzzwords, and humblebrag using local AI",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "offscreen"
   ],
   "host_permissions": [
     "https://www.reddit.com/*",
@@ -39,6 +40,15 @@
     "32": "icons/icon16.png",
     "48": "icons/icon16.png",
     "128": "icons/icon16.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["llm-worker.js", "prompts/prompts.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   }
 }
 

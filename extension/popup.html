@@ -11,18 +11,18 @@
         <h1>Social Media Rewriter</h1>
         
         <div class="control-group">
-            <label class="toggle-container">
-                <span>Enable Rewriting</span>
-                <div class="toggle-switch">
-                    <input type="checkbox" id="enableToggle">
-                    <span class="slider"></span>
+            <button id="initButton" class="init-button">Initialize Model</button>
+            <div id="progressContainer" class="progress-container" style="display: none;">
+                <div class="progress-bar">
+                    <div id="progressBar" class="progress-fill" style="width: 0%"></div>
                 </div>
-            </label>
+                <div id="progressText" class="progress-text">0%</div>
+            </div>
         </div>
 
         <div class="control-group">
-            <label for="modeSelect">Rewriting Mode:</label>
-            <select id="modeSelect" disabled>
+            <label for="rewriteModeSelect">Rewriting Mode:</label>
+            <select id="rewriteModeSelect" disabled>
                 <option value="neutralize">Neutralize</option>
                 <option value="decringe">De-cringe</option>
                 <option value="debuzzword">De-buzzword</option>
@@ -32,8 +32,26 @@
             </select>
         </div>
 
+        <div class="control-group">
+            <label for="behaviorModeSelect">Behavior:</label>
+            <select id="behaviorModeSelect" disabled>
+                <option value="manual">Manual (click to rewrite)</option>
+                <option value="auto">Auto (rewrite automatically)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label class="toggle-container">
+                <span>Enable Rewriting</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="enableToggle" disabled>
+                    <span class="slider"></span>
+                </div>
+            </label>
+        </div>
+
         <div class="status" id="status">
-            Extension disabled
+            Model not initialized
         </div>
     </div>
 
