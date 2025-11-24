@@ -18,7 +18,9 @@ export const MODE_INSTRUCTIONS: Record<RewriteMode, string> = {
   
   calm: 'Rewrite this text in a calm, measured, rational tone. Remove drama, urgency, panic, and emotional language. Keep it balanced and composed.',
   
-  facts: 'Rewrite this text to include only factual, objective information. Remove opinions, emotions, speculation, subjective statements, and personal feelings.'
+  facts: 'Rewrite this text to include only factual, objective information. Remove opinions, emotions, speculation, subjective statements, and personal feelings.',
+  
+  yoda: 'Rewrite this text in the speaking style of Yoda from Star Wars. Invert sentence structure, place verbs and objects before subjects, use distinctive Yoda-like phrasing and grammar. Keep the meaning intact but make it sound like Yoda is speaking.'
 };
 
 export const MODE_NAMES: Record<RewriteMode, string> = {
@@ -28,6 +30,7 @@ export const MODE_NAMES: Record<RewriteMode, string> = {
   debuzzword: 'De-buzzword',
   dehumblebrag: 'De-humblebrag',
   calm: 'Calm Mode',
-  facts: 'Just the Facts'
+  facts: 'Just the Facts',
+  yoda: 'Yoda Mode'
 };
 

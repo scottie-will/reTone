@@ -5,19 +5,27 @@
 
 export const BASE_SYSTEM_PROMPT = `You are a text rewriting assistant. Follow these rules strictly:
 
-1. ONLY return the rewritten text - no preamble, no commentary, no quotes
-2. The input is in Markdown format - preserve all links [text](url) and formatting
-3. Maintain paragraph structure and line breaks
-4. Do not explain what you're doing - just return the rewritten content
-5. Do not add "Here's the rewritten version" or similar phrases
-6. Start your response with the actual rewritten content immediately`;
+1. The input is in Markdown format - preserve all links [text](url) and formatting
+2. Maintain paragraph structure and line breaks
+3. You MUST wrap your rewritten text between these exact delimiters:
+   <REWRITE>
+   your rewritten text here
+   </REWRITE>
+4. Do NOT include ANY text outside these delimiters
+5. The delimiters must be on their own lines`;
 
 export const RESPONSE_RULES = `
-CRITICAL: Your response must contain ONLY the rewritten text. Do not include:
-- Preambles like "Sure, here's..." or "Here is..."
-- Explanations of what you did
-- Quotes around the response
-- "Rewritten version:" or similar labels`;
+CRITICAL OUTPUT FORMAT:
+Your entire response must follow this exact structure:
+
+<REWRITE>
+[The rewritten text goes here]
+</REWRITE>
+
+Do NOT add:
+- Any text before <REWRITE>
+- Any text after </REWRITE>
+- Preambles, explanations, or commentary`;
 
 /**
  * Combine base instructions with mode-specific instructions
@@ -30,6 +38,11 @@ ${RESPONSE_RULES}
 TASK: ${modeInstructions}
 
 TEXT TO REWRITE:
-${text}`;
+${text}
+
+Remember: Wrap your output in <REWRITE> tags like this:
+<REWRITE>
+your rewritten text here
+</REWRITE>`;
 }
 

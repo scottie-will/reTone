@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { sendMessage } from '@/shared/utils/messaging';
 import type { ExtensionState, MessageFromBackground } from '@/shared/types/messages';
 import { DEFAULT_STATE } from '@/shared/constants/config';
+import { MODEL_DISPLAY_NAME } from '@/shared/types/models';
 import ModelStatus from './components/ModelStatus';
 import ModeSelector from './components/ModeSelector';
 import BehaviorToggle from './components/BehaviorToggle';
@@ -149,7 +150,7 @@ export default function App() {
       {/* Footer */}
       <div className="mt-6 pt-4 border-t border-slate-200">
         <p className="text-xs text-slate-500 text-center">
-          Running locally with Phi-4-mini
+          Running locally with {MODEL_DISPLAY_NAME}
         </p>
       </div>
     </div>

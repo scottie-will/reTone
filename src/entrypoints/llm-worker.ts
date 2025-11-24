@@ -9,6 +9,7 @@ export default defineUnlistedScript(async () => {
   // Dynamic imports to avoid executing browser-only code during build
   const webllm = await import('@mlc-ai/web-llm');
   const { getPromptForMode } = await import('@/shared/constants/prompts');
+  const { DEFAULT_MODEL_CONFIG } = await import('@/shared/types/models');
 
 console.log('[Worker] LLM Worker script loading...');
   console.log('[Worker] WebLLM imported');
@@ -71,7 +72,7 @@ console.log('[Worker] LLM Worker initialized and ready');
   try {
       console.log('[Worker] Starting WebLLM model initialization...');
     
-              const modelId = config.modelId || 'Phi-4-mini-instruct-q4f16_1-MLC';
+      const modelId = config.modelId || DEFAULT_MODEL_CONFIG.modelId;
       console.log('[Worker] Model ID:', modelId);
     
     self.postMessage({
@@ -155,25 +156,29 @@ console.log('[Worker] LLM Worker initialized and ready');
 
     const response = await engine.chat.completions.create({
       messages,
-      temperature: 0.5,  // Lower temp = more focused, less creative
-      max_tokens: 20000,   // Increased for longer posts
+      temperature: DEFAULT_MODEL_CONFIG.temperature,
+      max_tokens: DEFAULT_MODEL_CONFIG.maxTokens,
       top_p: 0.9        // Nucleus sampling for quality
     });
 
     let rewrittenText = response.choices[0].message.content;
     
-    // Clean up response
+      console.log('[Worker] Raw response:', rewrittenText);
+    
+    // Extract content between <REWRITE> and </REWRITE> tags
     if (rewrittenText) {
-      rewrittenText = rewrittenText.trim();
-      
-      // Remove surrounding quotes (single or double)
-      if ((rewrittenText.startsWith('"') && rewrittenText.endsWith('"')) ||
-          (rewrittenText.startsWith("'") && rewrittenText.endsWith("'"))) {
-        rewrittenText = rewrittenText.slice(1, -1).trim();
+      const match = rewrittenText.match(/<REWRITE>([\s\S]*?)<\/REWRITE>/);
+      if (match && match[1]) {
+        rewrittenText = match[1].trim();
+          console.log('[Worker] Extracted rewritten text:', rewrittenText);
+      } else {
+        // Fallback: if tags not found, use the whole response (trimmed)
+          console.warn('[Worker] <REWRITE> tags not found, using full response');
+        rewrittenText = rewrittenText.trim();
       }
     }
     
-      console.log('[Worker] Rewrite complete:', rewrittenText);
+      console.log('[Worker] Final rewrite:', rewrittenText);
     
     self.postMessage({
       type: 'REWRITE_COMPLETE',

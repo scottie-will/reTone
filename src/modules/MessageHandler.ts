@@ -68,7 +68,7 @@ export class MessageHandler {
           this.pendingRequests.delete(requestId);
           reject(new Error('Request timeout'));
         }
-      }, 30000); // 30 second timeout
+      }, 120000); // 2 minute timeout (local AI can be slow)
     });
   }
 
