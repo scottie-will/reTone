@@ -32,9 +32,15 @@ npm run dev
 3. Wait for the model to download
 4. Done! The model stays cached for future use
 
+## Supported Sites
+
+- Reddit
+- LinkedIn  
+- Local test page
+
 ## Usage
 
-1. Visit a supported site (Reddit, LinkedIn, or the test page)
+1. Visit a supported site
 2. Look for the rewrite button on posts
 3. Click to rewrite the post
 4. Click again to toggle back to original

@@ -9,8 +9,8 @@ interface ModeSelectorProps {
 
 export default function ModeSelector({ currentMode, onChange, disabled }: ModeSelectorProps) {
   return (
-    <div className="py-1.5">
-      <label className="block text-sm font-medium text-gray-900 mb-1">
+    <div className="py-1.5 flex items-center gap-3">
+      <label className="text-sm font-medium text-gray-900 whitespace-nowrap">
         Rewriting Mode
       </label>
       
@@ -18,7 +18,7 @@ export default function ModeSelector({ currentMode, onChange, disabled }: ModeSe
         value={currentMode}
         onChange={(e) => onChange(e.target.value as RewriteMode)}
         disabled={disabled}
-        className="w-full px-2.5 py-1.5 border border-gray-300 rounded-md text-sm
+        className="flex-1 px-2.5 py-1.5 border border-gray-300 rounded-md text-sm
                    focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
                    disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500
                    bg-white text-gray-900"

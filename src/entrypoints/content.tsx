@@ -24,7 +24,7 @@ class ContentOrchestrator {
     this.extensionState = {
       enabled: false,
       modelLoaded: false,
-      rewriteMode: 'neutralize',
+      rewriteMode: 'tldr',
       behaviorMode: 'manual'
     };
     
@@ -216,8 +216,7 @@ export default defineContentScript({
   matches: [
     'https://www.reddit.com/*', 
     'https://www.linkedin.com/*',
-    'http://localhost/*',
-    'http://127.0.0.1/*',
+    'http://localhost/8080/*',
     'http://localhost:59500/*'
   ],
   excludeMatches: ['*://*.reddit.com/chat/*'],

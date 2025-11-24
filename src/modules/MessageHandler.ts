@@ -101,7 +101,7 @@ export class MessageHandler {
       chrome.runtime.sendMessage({ type: 'GET_STATE' }, (state: ExtensionState) => {
         resolve(state || {
           enabled: false,
-          rewriteMode: 'neutralize',
+          rewriteMode: 'tldr',
           behaviorMode: 'manual',
           modelLoaded: false
         });
