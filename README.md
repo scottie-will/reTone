@@ -4,7 +4,7 @@ A browser extension that uses local AI to rewrite social media posts with differ
 
 ## Features
 
-- **Multiple Rewriting Modes**: TL;DR, Neutralize, De-cringe, De-buzzword, De-humblebrag, Calm mode, Just the Facts
+- **Multiple Rewriting Modes**: TL;DR, De-buzzword, Brain Rot
 - **Privacy First**: All processing happens locally in your browser
 - **No Internet Required**: Once initialized, works completely offline
 
@@ -28,7 +28,7 @@ npm run dev
 ### First Use
 
 1. Click the extension icon in your browser
-2. Click "Initialize Model" (one-time setup, downloads ~300MB)
+2. Click "Initialize Model" (one-time setup, downloads model 300mb -1gb depending on model)
 3. Wait for the model to download
 4. Done! The model stays cached for future use
 
@@ -56,9 +56,9 @@ npx http-server -p 8080
 
 ## Browser Support
 
-- Chrome 113+ ✅
-- Edge 113+ ✅
-- Brave (with WebGPU enabled) ✅
+- Chrome 113+ 
+- Edge 113+
+- Brave (with WebGPU enabled)
 
 ## License
 
