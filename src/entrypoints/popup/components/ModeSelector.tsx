@@ -9,8 +9,8 @@ interface ModeSelectorProps {
 
 export default function ModeSelector({ currentMode, onChange, disabled }: ModeSelectorProps) {
   return (
-    <div className="py-2">
-      <label className="block text-sm font-medium text-gray-900 mb-1.5">
+    <div className="py-1.5">
+      <label className="block text-sm font-medium text-gray-900 mb-1">
         Rewriting Mode
       </label>
       

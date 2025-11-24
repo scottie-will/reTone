@@ -10,8 +10,8 @@ export default function InitButton({ isInitializing, onClick }: InitButtonProps)
       disabled={isInitializing}
       className="w-full bg-blue-600 hover:bg-blue-700 
                  disabled:bg-gray-400 disabled:cursor-not-allowed
-                 text-white font-medium text-sm py-2 px-3 rounded-md 
-                 transition-colors duration-150 flex items-center justify-center gap-2"
+                 text-white font-medium text-sm py-1.5 px-3 rounded-md 
+                 transition-colors duration-150 flex items-center justify-center gap-1.5"
     >
       {isInitializing ? (
         <>

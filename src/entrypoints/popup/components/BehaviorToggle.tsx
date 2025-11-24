@@ -8,8 +8,8 @@ interface BehaviorToggleProps {
 
 export default function BehaviorToggle({ currentBehavior, onChange, disabled }: BehaviorToggleProps) {
   return (
-    <div className="py-2">
-      <label className="block text-sm font-medium text-gray-900 mb-1.5">
+    <div className="py-1.5">
+      <label className="block text-sm font-medium text-gray-900 mb-1">
         Behavior Mode
       </label>
       
@@ -39,7 +39,7 @@ export default function BehaviorToggle({ currentBehavior, onChange, disabled }: 
         </button>
       </div>
       
-      <p className="text-xs text-gray-500 mt-1">
+      <p className="text-xs text-gray-500 mt-0.5">
         {currentBehavior === 'manual' 
           ? 'Show rewrite buttons on posts' 
           : 'Automatically rewrite all posts'}

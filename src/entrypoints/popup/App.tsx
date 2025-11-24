@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { sendMessage } from '@/shared/utils/messaging';
 import type { ExtensionState, MessageFromBackground } from '@/shared/types/messages';
 import { DEFAULT_STATE } from '@/shared/constants/config';
-import { MODEL_DISPLAY_NAME } from '@/shared/types/models';
+import { MODEL_DISPLAY_NAME, MODEL_HUGGINGFACE_URL } from '@/shared/types/models';
 import ModelStatus from './components/ModelStatus';
 import ModeSelector from './components/ModeSelector';
 import BehaviorToggle from './components/BehaviorToggle';
@@ -95,26 +95,33 @@ export default function App() {
   }
 
   return (
-    <div className="w-[380px] bg-white">
+    <div className="w-[320px] bg-white">
       {/* Grammarly-style Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-200">
         <div className="flex items-center gap-2">
           <img 
             src={state.enabled ? '/icons/Logo128.png' : '/icons/Logo_inactive128.png'}
             alt="reTone" 
-            className="w-6 h-6"
+            className="w-5 h-5"
           />
-          <h1 className="text-base font-semibold text-gray-900">
+          <h1 className="text-sm font-semibold text-gray-900">
             reTone
           </h1>
+          {state.modelLoaded && (
+            <div className="flex items-center gap-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+              <span className="text-xs text-gray-500">Ready</span>
+            </div>
+          )}
         </div>
-        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-700">
+        <span className="inline-block px-2.5 py-0.5 text-xs font-medium bg-gray-200 text-gray-800
+                         rounded-tr-full rounded-tl-full rounded-br-full rounded-bl-none">
           Free
-        </div>
+        </span>
       </div>
 
       {/* Content */}
-      <div className="px-4 py-3">{/* Will wrap rest of content */}
+      <div className="px-3 py-2.5">{/* Will wrap rest of content */}
 
         {/* Model Status */}
         <ModelStatus 
@@ -134,7 +141,7 @@ export default function App() {
 
         {/* Controls - only enabled when model is loaded */}
         {state.modelLoaded && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {/* Enable/Disable Toggle */}
             <EnableToggle 
               enabled={state.enabled}
@@ -160,9 +167,17 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <div className="px-4 py-2 border-t border-gray-200 bg-gray-50">
+      <div className="px-3 py-1.5 border-t border-gray-200 bg-gray-50">
         <p className="text-xs text-gray-500 text-center">
-          Running locally with {MODEL_DISPLAY_NAME}
+          Powered by{' '}
+          <a 
+            href={MODEL_HUGGINGFACE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            {MODEL_DISPLAY_NAME}
+          </a>
         </p>
       </div>
     </div>

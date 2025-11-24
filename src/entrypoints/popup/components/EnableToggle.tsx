@@ -5,12 +5,9 @@ interface EnableToggleProps {
 
 export default function EnableToggle({ enabled, onChange }: EnableToggleProps) {
   return (
-    <div className="flex items-center justify-between py-2">
+    <div className="flex items-center justify-between py-1.5">
       <div className="flex-1">
         <h3 className="text-sm font-medium text-gray-900">Enable Extension</h3>
-        <p className="text-xs text-gray-500 mt-0.5">
-          {enabled ? 'Active' : 'Inactive'}
-        </p>
       </div>
       
       <button
