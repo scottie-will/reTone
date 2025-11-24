@@ -1,0 +1,8 @@
+node_modules
+dist
+.output
+.wxt
+public/*.js
+*.config.js
+*.config.ts
+
