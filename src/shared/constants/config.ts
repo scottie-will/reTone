@@ -6,13 +6,15 @@ export const STORAGE_KEYS = {
   ENABLED: 'enabled',
   REWRITE_MODE: 'rewriteMode',
   BEHAVIOR_MODE: 'behaviorMode',
-  MODEL_LOADED: 'modelLoaded'
+  MODEL_LOADED: 'modelLoaded',
+  IS_INITIALIZING: 'isInitializing'
 } as const;
 
 export const DEFAULT_STATE = {
   enabled: false,
   rewriteMode: 'tldr' as const,
   behaviorMode: 'manual' as const,
-  modelLoaded: false
+  modelLoaded: false,
+  isInitializing: false
 };
 

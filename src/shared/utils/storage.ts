@@ -11,18 +11,20 @@ export async function getExtensionState(): Promise<ExtensionState> {
     'enabled',
     'rewriteMode',
     'behaviorMode',
-    'modelLoaded'
+    'modelLoaded',
+    'isInitializing'
   ]);
-  
+
   logger.log('[STORAGE] Raw stored values:', stored);
-  
+
   const state = {
     enabled: stored.enabled ?? DEFAULT_STATE.enabled,
     rewriteMode: stored.rewriteMode ?? DEFAULT_STATE.rewriteMode,
     behaviorMode: stored.behaviorMode ?? DEFAULT_STATE.behaviorMode,
-    modelLoaded: stored.modelLoaded ?? DEFAULT_STATE.modelLoaded
+    modelLoaded: stored.modelLoaded ?? DEFAULT_STATE.modelLoaded,
+    isInitializing: stored.isInitializing ?? DEFAULT_STATE.isInitializing
   };
-  
+
   logger.log('[STORAGE] Returning state:', state);
   return state;
 }

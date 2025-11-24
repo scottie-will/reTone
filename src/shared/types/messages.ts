@@ -8,6 +8,7 @@ export interface ExtensionState {
   rewriteMode: RewriteMode;
   behaviorMode: BehaviorMode;
   modelLoaded: boolean;
+  isInitializing: boolean;
 }
 
 // Messages from popup/content to background

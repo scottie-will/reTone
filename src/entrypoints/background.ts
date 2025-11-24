@@ -169,12 +169,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         (async () => {
           if (data.success) {
             extensionState.modelLoaded = true;
-            await saveExtensionState({ modelLoaded: true });
-            
+            extensionState.isInitializing = false;
+            await saveExtensionState({ modelLoaded: true, isInitializing: false });
+
             // Verify it was saved
             const verification = await chrome.storage.local.get('modelLoaded');
             console.log('[VERIFY] Storage after save:', verification);
-            
+
             if (data.cached) {
               console.log('✓ Model loaded from cache (already downloaded)');
             } else {
@@ -183,6 +184,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             console.log('✓ State saved to storage:', extensionState);
             notifyPopups({ type: 'STATE_UPDATED', state: extensionState });
           } else {
+            extensionState.isInitializing = false;
+            await saveExtensionState({ isInitializing: false });
             console.error('Model initialization failed:', data.error);
             notifyPopups({ type: 'INIT_ERROR', error: data.error });
           }
@@ -201,9 +204,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
         
       case 'INIT_ERROR':
-        console.error('Init error from offscreen:', data.error);
-        console.error('Full error details:', data);
-        notifyPopups({ type: 'INIT_ERROR', error: data.error, details: data.details });
+        (async () => {
+          extensionState.isInitializing = false;
+          await saveExtensionState({ isInitializing: false });
+          console.error('Init error from offscreen:', data.error);
+          console.error('Full error details:', data);
+          notifyPopups({ type: 'INIT_ERROR', error: data.error, details: data.details });
+        })();
         sendResponse({ success: true });
         return;
     }
@@ -251,6 +258,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
         case 'INIT_MODEL':
           console.log('[INIT] Starting model initialization...');
+          extensionState.isInitializing = true;
+          await saveExtensionState({ isInitializing: true });
+          notifyPopups({ type: 'STATE_UPDATED', state: extensionState });
           await setupOffscreenDocument();
           console.log('[INIT] Offscreen document ready, sending INIT_MODEL message...');
           await chrome.runtime.sendMessage({ type: 'INIT_MODEL', payload: {} });

@@ -11,7 +11,6 @@ import InitButton from './components/InitButton';
 
 export default function App() {
   const [state, setState] = useState<ExtensionState>(DEFAULT_STATE);
-  const [isInitializing, setIsInitializing] = useState(false);
   const [initProgress, setInitProgress] = useState({ text: '', percent: 0 });
   const [error, setError] = useState<string>('');
 
@@ -29,14 +28,11 @@ export default function App() {
         setInitProgress({ text: message.progress, percent: message.percent });
       } else if (message.type === 'INIT_ERROR') {
         setError(message.error);
-        setIsInitializing(false);
       } else if (message.type === 'MODEL_INITIALIZED') {
         if (message.success) {
-          setIsInitializing(false);
           loadState();
         } else {
           setError(message.error || 'Model initialization failed');
-          setIsInitializing(false);
         }
       }
     };
@@ -55,7 +51,6 @@ export default function App() {
   }
 
   async function handleInitModel() {
-    setIsInitializing(true);
     setError('');
     setInitProgress({ text: 'Starting initialization...', percent: 0 });
 
@@ -63,7 +58,7 @@ export default function App() {
       await sendMessage({ type: 'INIT_MODEL' });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Initialization failed');
-      setIsInitializing(false);
+      loadState(); // Reload state to get updated isInitializing flag
     }
   }
 
@@ -124,17 +119,17 @@ export default function App() {
       <div className="px-3 py-2.5">{/* Will wrap rest of content */}
 
         {/* Model Status */}
-        <ModelStatus 
+        <ModelStatus
           modelLoaded={state.modelLoaded}
-          isInitializing={isInitializing}
+          isInitializing={state.isInitializing}
           progress={initProgress}
           error={error}
         />
 
         {/* Initialize Button */}
         {!state.modelLoaded && (
-          <InitButton 
-            isInitializing={isInitializing}
+          <InitButton
+            isInitializing={state.isInitializing}
             onClick={handleInitModel}
           />
         )}
