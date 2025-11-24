@@ -1,17 +1,30 @@
 import type { BaseAdapter } from '@/adapters/BaseAdapter';
+import TurndownService from 'turndown';
+import { marked } from 'marked';
 
 /**
  * Text Replacer - Handles text extraction and replacement
+ * Preserves HTML structure using Markdown conversion
  */
 export class TextReplacer {
   private adapter: BaseAdapter;
+  private turndownService: TurndownService;
 
   constructor(adapter: BaseAdapter) {
     this.adapter = adapter;
+    
+    // Initialize markdown converter
+    this.turndownService = new TurndownService({
+      headingStyle: 'atx',
+      codeBlockStyle: 'fenced',
+      emDelimiter: '*',
+      strongDelimiter: '**'
+    });
   }
 
   /**
-   * Extract text content from a post
+   * Extract text content from a post as markdown
+   * Preserves links, formatting, and structure
    */
   extractText(post: HTMLElement): string {
     const textElement = this.adapter.getTextElement(post);
@@ -19,11 +32,14 @@ export class TextReplacer {
       throw new Error('No text element found in post');
     }
     
-    return textElement.textContent?.trim() || '';
+    // Convert HTML to Markdown to preserve structure and links
+    const markdown = this.turndownService.turndown(textElement.innerHTML);
+    return markdown.trim();
   }
 
   /**
    * Replace text in a post
+   * Accepts markdown and converts back to HTML
    */
   replaceText(post: HTMLElement, newText: string): void {
     const textElement = this.adapter.getTextElement(post);
@@ -31,31 +47,34 @@ export class TextReplacer {
       throw new Error('No text element found in post');
     }
     
-    const dataset = textElement.dataset as { originalText?: string };
+    const dataset = textElement.dataset as { originalHtml?: string };
     
-    // Store original if not already stored
-    if (!dataset.originalText) {
-      dataset.originalText = textElement.textContent || '';
+    // Store original HTML if not already stored
+    if (!dataset.originalHtml) {
+      dataset.originalHtml = textElement.innerHTML;
     }
     
-    // Replace text
-    textElement.textContent = newText;
+    // Convert markdown back to HTML
+    const html = marked.parse(newText, { async: false }) as string;
+    
+    // Replace HTML content
+    textElement.innerHTML = html;
     
     // Mark as rewritten
     (post.dataset as { rewritten?: string }).rewritten = 'true';
   }
 
   /**
-   * Restore original text in a post
+   * Restore original HTML in a post
    */
   restoreOriginal(post: HTMLElement): void {
     const textElement = this.adapter.getTextElement(post);
     if (!textElement) return;
     
-    const dataset = textElement.dataset as { originalText?: string };
-    if (!dataset.originalText) return;
+    const dataset = textElement.dataset as { originalHtml?: string };
+    if (!dataset.originalHtml) return;
     
-    textElement.textContent = dataset.originalText;
+    textElement.innerHTML = dataset.originalHtml;
     delete (post.dataset as { rewritten?: string }).rewritten;
   }
 
@@ -73,7 +92,10 @@ export class TextReplacer {
     const textElement = this.adapter.getTextElement(post);
     if (!textElement) return null;
     
-    return (textElement.dataset as { originalText?: string }).originalText || null;
+    const dataset = textElement.dataset as { originalHtml?: string };
+    if (!dataset.originalHtml) return null;
+    
+    return this.turndownService.turndown(dataset.originalHtml);
   }
 }
 

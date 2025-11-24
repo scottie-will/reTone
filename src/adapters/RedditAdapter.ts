@@ -1,8 +1,7 @@
 import { BaseAdapter } from './BaseAdapter';
 
 /**
- * Reddit Adapter - For reddit.com
- * TODO: Implement Reddit-specific selectors
+ * Reddit Adapter - For reddit.com (New Reddit with shreddit components)
  */
 export class RedditAdapter extends BaseAdapter {
   constructor() {
@@ -15,31 +14,67 @@ export class RedditAdapter extends BaseAdapter {
   }
 
   getPostElements(): NodeListOf<HTMLElement> | HTMLElement[] {
-    // TODO: Implement Reddit post selectors
-    // Potential selectors to try:
-    // - [data-testid="post-container"]
-    // - .Post
-    // - div[role="article"]
-    throw new Error('Reddit adapter not yet implemented');
+    // New Reddit uses shreddit-post custom elements
+    const posts = document.querySelectorAll('shreddit-post');
+    console.log(`[RedditAdapter] Found ${posts.length} shreddit-post elements`);
+    
+    // Log the first post structure for debugging
+    if (posts.length > 0) {
+      const firstPost = posts[0];
+      console.log('[RedditAdapter] First post:', firstPost);
+      console.log('[RedditAdapter] Has text body:', !!firstPost.querySelector('shreddit-post-text-body'));
+      console.log('[RedditAdapter] Text element:', firstPost.querySelector('[id$="-post-rtjson-content"]'));
+    }
+    
+    return Array.from(posts) as HTMLElement[];
   }
 
   getTextElement(post: HTMLElement): HTMLElement | null {
-    // TODO: Implement Reddit text element selector
-    // Potential selectors:
-    // - [data-click-id="text"]
-    // - .RichTextJSON-root
-    throw new Error('Reddit adapter not yet implemented');
+    // Target the text body component
+    const textBody = post.querySelector('shreddit-post-text-body');
+    if (!textBody) return null;
+    
+    // Get the actual content div with the rtjson-content id
+    // Example: id="t3_1npc5qq-post-rtjson-content"
+    const contentDiv = textBody.querySelector('[id$="-post-rtjson-content"]');
+    return contentDiv as HTMLElement | null;
   }
 
   getButtonContainer(post: HTMLElement): HTMLElement | null {
-    // TODO: Implement Reddit button container
-    // Should inject near action buttons (share, save, etc.)
-    throw new Error('Reddit adapter not yet implemented');
+    // Check if we already have a button container
+    let container = post.querySelector<HTMLElement>('.rewrite-button-container');
+    if (container) return container;
+    
+    // Find the shreddit-post-text-body element
+    const textBody = post.querySelector('shreddit-post-text-body');
+    if (!textBody || !textBody.parentNode) return null;
+    
+    // Create container to position just above the text body
+    container = document.createElement('div');
+    container.className = 'rewrite-button-container';
+    container.style.cssText = `
+      display: block;
+      padding: 8px 12px;
+      margin-bottom: 4px;
+    `;
+    
+    // Insert container immediately before the text body element
+    textBody.parentNode.insertBefore(container, textBody);
+    
+    return container;
+  }
+
+  getPostId(post: HTMLElement): string {
+    // Try to get the post-id attribute
+    return post.getAttribute('post-id') || 
+           post.getAttribute('id') || 
+           `reddit-${Date.now()}-${Math.random()}`;
   }
 
   isValidPost(element: HTMLElement): boolean {
-    // TODO: Implement Reddit post validation
-    throw new Error('Reddit adapter not yet implemented');
+    // Valid if it's a shreddit-post with text content
+    return element.tagName.toLowerCase() === 'shreddit-post' &&
+           element.querySelector('shreddit-post-text-body') !== null;
   }
 }
 

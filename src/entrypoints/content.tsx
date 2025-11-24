@@ -87,21 +87,36 @@ class ContentOrchestrator {
   }
 
   private handleNewPost(post: HTMLElement): void {
+    console.log('[ContentOrchestrator] handleNewPost called');
+    console.log('[ContentOrchestrator] State:', {
+      enabled: this.extensionState.enabled,
+      modelLoaded: this.extensionState.modelLoaded,
+      behaviorMode: this.extensionState.behaviorMode
+    });
+    
     // Only add buttons if extension is enabled and in manual mode
     if (!this.extensionState.enabled || 
         !this.extensionState.modelLoaded ||
         this.extensionState.behaviorMode !== 'manual' ||
         !this.adapter ||
         !this.textReplacer) {
+      console.log('[ContentOrchestrator] Skipping button injection - requirements not met');
       return;
     }
     
     const postId = this.adapter.getPostId(post);
+    console.log('[ContentOrchestrator] Processing post:', postId);
+    
     const container = this.adapter.getButtonContainer(post);
     
-    if (!container) return;
+    if (!container) {
+      console.log('[ContentOrchestrator] No button container found');
+      return;
+    }
     
-    // Inject React button with Shadow DOM
+    console.log('[ContentOrchestrator] Injecting button into post:', postId);
+    
+    // Inject React button
     this.buttonContainer.injectButton(
       post,
       postId,

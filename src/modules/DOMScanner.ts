@@ -20,13 +20,19 @@ export class DOMScanner {
    * Scan page for all posts and process them
    */
   scanForPosts(): void {
+    console.log('[DOMScanner] Scanning for posts...');
     const posts = this.adapter.getPostElements();
+    console.log(`[DOMScanner] Found ${posts.length} post elements`);
     
+    let validCount = 0;
     posts.forEach(post => {
       if (this.adapter.isValidPost(post)) {
+        validCount++;
         this.processPost(post);
       }
     });
+    
+    console.log(`[DOMScanner] Processed ${validCount} valid posts`);
   }
 
   /**

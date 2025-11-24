@@ -11,7 +11,7 @@ export const STORAGE_KEYS = {
 
 export const DEFAULT_STATE = {
   enabled: false,
-  rewriteMode: 'neutralize' as const,
+  rewriteMode: 'tldr' as const,
   behaviorMode: 'manual' as const,
   modelLoaded: false
 };

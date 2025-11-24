@@ -1,6 +1,6 @@
 // Message types for extension communication
 
-export type RewriteMode = 'neutralize' | 'decringe' | 'debuzzword' | 'dehumblebrag' | 'calm' | 'facts';
+export type RewriteMode = 'tldr' | 'neutralize' | 'decringe' | 'debuzzword' | 'dehumblebrag' | 'calm' | 'facts';
 export type BehaviorMode = 'manual' | 'auto';
 
 export interface ExtensionState {

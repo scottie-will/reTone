@@ -71,7 +71,7 @@ console.log('[Worker] LLM Worker initialized and ready');
   try {
       console.log('[Worker] Starting WebLLM model initialization...');
     
-    const modelId = config.modelId || 'SmolLM2-360M-Instruct-q4f16_1-MLC';
+              const modelId = config.modelId || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
       console.log('[Worker] Model ID:', modelId);
     
     self.postMessage({
@@ -155,19 +155,21 @@ console.log('[Worker] LLM Worker initialized and ready');
 
     const response = await engine.chat.completions.create({
       messages,
-      temperature: 0.7,
-      max_tokens: 256
+      temperature: 0.5,  // Lower temp = more focused, less creative
+      max_tokens: 20000,   // Increased for longer posts
+      top_p: 0.9        // Nucleus sampling for quality
     });
 
     let rewrittenText = response.choices[0].message.content;
     
-    // Clean up response: remove surrounding quotes if present
+    // Clean up response
     if (rewrittenText) {
       rewrittenText = rewrittenText.trim();
+      
       // Remove surrounding quotes (single or double)
       if ((rewrittenText.startsWith('"') && rewrittenText.endsWith('"')) ||
           (rewrittenText.startsWith("'") && rewrittenText.endsWith("'"))) {
-        rewrittenText = rewrittenText.slice(1, -1);
+        rewrittenText = rewrittenText.slice(1, -1).trim();
       }
     }
     

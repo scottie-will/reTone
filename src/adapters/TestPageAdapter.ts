@@ -32,15 +32,12 @@ export class TestPageAdapter extends BaseAdapter {
         post.style.position = 'relative';
       }
       
-      // Add padding to bottom so text doesn't overlap with button
-      post.style.paddingBottom = '56px';
-      
-      // Create container positioned in lower left
+      // Create container positioned in top left
       container = document.createElement('div');
       container.className = 'rewrite-button-container';
       container.style.cssText = `
         position: absolute;
-        bottom: 12px;
+        top: 12px;
         left: 12px;
         z-index: 100;
       `;
