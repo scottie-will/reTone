@@ -159,7 +159,18 @@ console.log('[Worker] LLM Worker initialized and ready');
       max_tokens: 256
     });
 
-    const rewrittenText = response.choices[0].message.content;
+    let rewrittenText = response.choices[0].message.content;
+    
+    // Clean up response: remove surrounding quotes if present
+    if (rewrittenText) {
+      rewrittenText = rewrittenText.trim();
+      // Remove surrounding quotes (single or double)
+      if ((rewrittenText.startsWith('"') && rewrittenText.endsWith('"')) ||
+          (rewrittenText.startsWith("'") && rewrittenText.endsWith("'"))) {
+        rewrittenText = rewrittenText.slice(1, -1);
+      }
+    }
+    
       console.log('[Worker] Rewrite complete:', rewrittenText);
     
     self.postMessage({

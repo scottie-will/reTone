@@ -24,26 +24,13 @@ export class ButtonContainer {
       return;
     }
 
-    // Create container for Shadow DOM
-    const shadowHost = document.createElement('div');
-    shadowHost.className = 'rewriter-button-host';
-    shadowHost.style.cssText = 'display: inline-block; margin-top: 8px;';
-    
-    // Attach Shadow DOM for CSS isolation
-    const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
-    
-    // Create root container inside shadow DOM
-    const rootContainer = document.createElement('div');
-    shadowRoot.appendChild(rootContainer);
-    
-    // Add Tailwind styles to shadow DOM
-    const styleLink = document.createElement('link');
-    styleLink.rel = 'stylesheet';
-    styleLink.href = chrome.runtime.getURL('content-scripts/content.css');
-    shadowRoot.appendChild(styleLink);
+    // Create container (no Shadow DOM - simpler and CSS just works)
+    const reactHost = document.createElement('div');
+    reactHost.className = 'rewriter-button-host';
+    reactHost.style.cssText = 'display: inline-block;';
 
     // Create React root and render button
-    const root = createRoot(rootContainer);
+    const root = createRoot(reactHost);
     root.render(
       <RewriteButton 
         onRewrite={onRewrite} 
@@ -53,10 +40,10 @@ export class ButtonContainer {
     );
 
     // Store root for cleanup
-    this.roots.set(postId, { container: shadowHost, root });
+    this.roots.set(postId, { container: reactHost, root });
 
     // Append to DOM
-    containerElement.appendChild(shadowHost);
+    containerElement.appendChild(reactHost);
   }
 
   /**

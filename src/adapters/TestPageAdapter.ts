@@ -24,16 +24,27 @@ export class TestPageAdapter extends BaseAdapter {
   }
 
   getButtonContainer(post: HTMLElement): HTMLElement | null {
-    // Insert button after the post-content
-    const textElement = this.getTextElement(post);
-    if (!textElement) return null;
-    
     // Check if we already have a button container
     let container = post.querySelector<HTMLElement>('.rewrite-button-container');
     if (!container) {
+      // Make post relatively positioned for absolute button placement
+      if (getComputedStyle(post).position === 'static') {
+        post.style.position = 'relative';
+      }
+      
+      // Add padding to bottom so text doesn't overlap with button
+      post.style.paddingBottom = '56px';
+      
+      // Create container positioned in lower left
       container = document.createElement('div');
       container.className = 'rewrite-button-container';
-      textElement.parentNode?.insertBefore(container, textElement.nextSibling);
+      container.style.cssText = `
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        z-index: 100;
+      `;
+      post.appendChild(container);
     }
     
     return container;
