@@ -1,6 +1,6 @@
-# Social Media Rewriter
+# reTone
 
-A browser extension that uses local AI to rewrite social media posts, removing cringe, buzzwords, humblebrag, and excessive drama.
+A browser extension that uses local AI to rewrite social media posts with different styles and tones.
 
 ## Features
 

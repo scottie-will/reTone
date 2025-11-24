@@ -95,66 +95,73 @@ export default function App() {
   }
 
   return (
-    <div className="w-[400px] min-h-[500px] bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      {/* Header */}
-      <div className="mb-6 text-center">
-        <img 
-          src="/icons/Logo.png" 
-          alt="Social Media Rewriter" 
-          className="w-20 h-20 mx-auto mb-3"
-        />
-        <h1 className="text-2xl font-bold text-slate-800 mb-2">
-          Social Media Rewriter
-        </h1>
-        <p className="text-sm text-slate-600">
-          Rewrite posts using local AI
-        </p>
+    <div className="w-[380px] bg-white">
+      {/* Grammarly-style Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+        <div className="flex items-center gap-2">
+          <img 
+            src={state.enabled ? '/icons/Logo128.png' : '/icons/Logo_inactive128.png'}
+            alt="reTone" 
+            className="w-6 h-6"
+          />
+          <h1 className="text-base font-semibold text-gray-900">
+            reTone
+          </h1>
+        </div>
+        <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-700">
+          Free
+        </div>
       </div>
 
-      {/* Model Status */}
-      <ModelStatus 
-        modelLoaded={state.modelLoaded}
-        isInitializing={isInitializing}
-        progress={initProgress}
-        error={error}
-      />
+      {/* Content */}
+      <div className="px-4 py-3">{/* Will wrap rest of content */}
 
-      {/* Initialize Button */}
-      {!state.modelLoaded && (
-        <InitButton 
+        {/* Model Status */}
+        <ModelStatus 
+          modelLoaded={state.modelLoaded}
           isInitializing={isInitializing}
-          onClick={handleInitModel}
+          progress={initProgress}
+          error={error}
         />
-      )}
 
-      {/* Controls - only enabled when model is loaded */}
-      {state.modelLoaded && (
-        <div className="space-y-4">
-          {/* Enable/Disable Toggle */}
-          <EnableToggle 
-            enabled={state.enabled}
-            onChange={handleToggleEnabled}
+        {/* Initialize Button */}
+        {!state.modelLoaded && (
+          <InitButton 
+            isInitializing={isInitializing}
+            onClick={handleInitModel}
           />
+        )}
 
-          {/* Mode Selector */}
-          <ModeSelector 
-            currentMode={state.rewriteMode}
-            onChange={handleModeChange}
-            disabled={!state.enabled}
-          />
+        {/* Controls - only enabled when model is loaded */}
+        {state.modelLoaded && (
+          <div className="space-y-3">
+            {/* Enable/Disable Toggle */}
+            <EnableToggle 
+              enabled={state.enabled}
+              onChange={handleToggleEnabled}
+            />
 
-          {/* Behavior Toggle */}
-          <BehaviorToggle 
-            currentBehavior={state.behaviorMode}
-            onChange={handleBehaviorChange}
-            disabled={!state.enabled}
-          />
-        </div>
-      )}
+            {/* Mode Selector */}
+            <ModeSelector 
+              currentMode={state.rewriteMode}
+              onChange={handleModeChange}
+              disabled={!state.enabled}
+            />
+
+            {/* Behavior Toggle */}
+            <BehaviorToggle 
+              currentBehavior={state.behaviorMode}
+              onChange={handleBehaviorChange}
+              disabled={!state.enabled}
+            />
+          </div>
+        )}
+
+      </div>
 
       {/* Footer */}
-      <div className="mt-6 pt-4 border-t border-slate-200">
-        <p className="text-xs text-slate-500 text-center">
+      <div className="px-4 py-2 border-t border-gray-200 bg-gray-50">
+        <p className="text-xs text-gray-500 text-center">
           Running locally with {MODEL_DISPLAY_NAME}
         </p>
       </div>

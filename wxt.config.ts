@@ -6,8 +6,8 @@ export default defineConfig({
   srcDir: 'src',
   publicDir: 'public',
   manifest: {
-    name: 'Social Media Rewriter',
-    description: 'Rewrite social media posts to remove cringe, buzzwords, and humblebrag using local AI',
+    name: 'reTone',
+    description: 'Rewrite social media posts using local AI',
     icons: {
       '16': 'icons/Logo128.png',
       '32': 'icons/Logo128.png',

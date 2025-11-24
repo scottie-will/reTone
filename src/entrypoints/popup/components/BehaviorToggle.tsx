@@ -8,19 +8,19 @@ interface BehaviorToggleProps {
 
 export default function BehaviorToggle({ currentBehavior, onChange, disabled }: BehaviorToggleProps) {
   return (
-    <div className="bg-white rounded-lg p-4 shadow-sm border border-slate-200">
-      <label className="block text-sm font-semibold text-slate-800 mb-3">
+    <div className="py-2">
+      <label className="block text-sm font-medium text-gray-900 mb-1.5">
         Behavior Mode
       </label>
       
-      <div className="flex gap-2">
+      <div className="flex gap-1.5">
         <button
           onClick={() => onChange('manual')}
           disabled={disabled}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
+          className={`flex-1 py-1.5 px-2.5 rounded-md text-xs font-medium transition-colors
                      ${currentBehavior === 'manual' 
-                       ? 'bg-blue-600 text-white shadow-sm' 
-                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}
+                       ? 'bg-blue-600 text-white' 
+                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
                      ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           Manual
@@ -29,17 +29,17 @@ export default function BehaviorToggle({ currentBehavior, onChange, disabled }: 
         <button
           onClick={() => onChange('auto')}
           disabled={disabled}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200
+          className={`flex-1 py-1.5 px-2.5 rounded-md text-xs font-medium transition-colors
                      ${currentBehavior === 'auto' 
-                       ? 'bg-blue-600 text-white shadow-sm' 
-                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}
+                       ? 'bg-blue-600 text-white' 
+                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
                      ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           Auto
         </button>
       </div>
       
-      <p className="text-xs text-slate-600 mt-2">
+      <p className="text-xs text-gray-500 mt-1">
         {currentBehavior === 'manual' 
           ? 'Show rewrite buttons on posts' 
           : 'Automatically rewrite all posts'}
