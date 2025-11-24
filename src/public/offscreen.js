@@ -6,8 +6,13 @@
 let llmWorker = null;
 
 function initializeWorker(config = {}) {
+  // If worker already exists, just send init message to it (for reinit from cache)
   if (llmWorker) {
-    console.log('[Offscreen] Worker already exists');
+    console.log('[Offscreen] Worker already exists, sending init message to existing worker...');
+    llmWorker.postMessage({
+      type: 'INIT_MODEL',
+      payload: config || {}
+    });
     return;
   }
   
@@ -78,7 +83,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'INIT_MODEL':
       initializeWorker(message.payload);
       sendResponse({ success: true });
-      break;
+      return true; // Keep channel open
       
     case 'REWRITE_TEXT':
       if (llmWorker) {
@@ -90,12 +95,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       } else {
         sendResponse({ success: false, error: 'Worker not initialized' });
       }
-      break;
+      return true; // Keep channel open
       
     default:
-      sendResponse({ success: false, error: 'Unknown message type' });
+      // Don't respond to messages not meant for offscreen document
+      // Let the background script handle them
+      console.log('[Offscreen] Ignoring message type:', message.type);
+      return false; // Don't keep channel open, we're not responding
   }
-  
-  return true;
 });
 

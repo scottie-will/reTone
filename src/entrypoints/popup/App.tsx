@@ -49,7 +49,7 @@ export default function App() {
       const response = await sendMessage<ExtensionState>({ type: 'GET_STATE' });
       setState(response);
     } catch (err) {
-      console.error('Failed to load state:', err);
+      console.error('[POPUP] Failed to load state:', err);
     }
   }
 
