@@ -97,7 +97,12 @@ export default function App() {
   return (
     <div className="w-[400px] min-h-[500px] bg-gradient-to-br from-slate-50 to-slate-100 p-6">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-6 text-center">
+        <img 
+          src="/icons/Logo.png" 
+          alt="Social Media Rewriter" 
+          className="w-20 h-20 mx-auto mb-3"
+        />
         <h1 className="text-2xl font-bold text-slate-800 mb-2">
           Social Media Rewriter
         </h1>

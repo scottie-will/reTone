@@ -10,11 +10,34 @@ let creatingOffscreenDocument = false; // Lock to prevent concurrent creation
 
 console.log('Background service worker initialized');
 
+/**
+ * Update extension icon based on enabled state
+ */
+async function updateIcon(enabled: boolean): Promise<void> {
+  try {
+    const iconPath = enabled ? '/icons/Logo128.png' : '/icons/Logo_inactive128.png';
+    
+    await chrome.action.setIcon({
+      path: iconPath
+    });
+    console.log(`[ICON] Updated to ${enabled ? 'active' : 'inactive'} icon`);
+  } catch (error: any) {
+    // Ignore error in dev environment (WXT's fake browser doesn't implement this)
+    if (!error?.message?.includes('not implemented')) {
+      console.error('[ICON] Failed to update icon:', error);
+      console.error('[ICON] Try checking if icons exist and are valid PNGs');
+    }
+  }
+}
+
 // Function to check and restore state
 async function checkAndRestoreState() {
   console.log('[STATE] Checking and restoring state...');
   extensionState = await getExtensionState();
   console.log('[STATE] Loaded from storage:', extensionState);
+  
+  // Update icon based on enabled state
+  await updateIcon(extensionState.enabled);
   
   // If model was loaded but offscreen document doesn't exist, recreate it and reinitialize
   // (When service worker restarts, offscreen document is destroyed, but model cache persists in IndexedDB)
@@ -238,6 +261,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         case 'SET_ENABLED':
           extensionState.enabled = message.enabled;
           await saveExtensionState({ enabled: message.enabled });
+          await updateIcon(message.enabled); // Update icon to reflect enabled state
           await broadcastToAllTabs({ type: 'STATE_CHANGED', state: extensionState });
           sendResponse({ success: true });
           break;

@@ -4,14 +4,15 @@ export default defineConfig({
   extensionApi: 'chrome',
   modules: ['@wxt-dev/module-react'],
   srcDir: 'src',
-  publicDir: 'src/public',
+  publicDir: 'public',
   manifest: {
     name: 'Social Media Rewriter',
     description: 'Rewrite social media posts to remove cringe, buzzwords, and humblebrag using local AI',
     icons: {
-      '16': 'icons/Logo.png',
-      '48': 'icons/Logo.png',
-      '128': 'icons/Logo.png'
+      '16': 'icons/Logo128.png',
+      '32': 'icons/Logo128.png',
+      '48': 'icons/Logo128.png',
+      '128': 'icons/Logo128.png'
     },
     permissions: ['storage', 'activeTab', 'offscreen'],
     host_permissions: [

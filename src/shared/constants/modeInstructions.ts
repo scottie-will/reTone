@@ -20,7 +20,9 @@ export const MODE_INSTRUCTIONS: Record<RewriteMode, string> = {
   
   facts: 'Rewrite this text to include only factual, objective information. Remove opinions, emotions, speculation, subjective statements, and personal feelings.',
   
-  yoda: 'Rewrite this text in the speaking style of Yoda from Star Wars. Invert sentence structure, place verbs and objects before subjects, use distinctive Yoda-like phrasing and grammar. Keep the meaning intact but make it sound like Yoda is speaking.'
+  yoda: 'Rewrite this text in the speaking style of Yoda from Star Wars. Invert sentence structure, place verbs and objects before subjects, use distinctive Yoda-like phrasing and grammar. Keep the meaning intact but make it sound like Yoda is speaking.',
+  
+  brainrot: 'Rewrite this text using brain rot language, Gen Z slang, and internet meme terminology. Use terms like "no cap", "fr fr", "bussin", "sigma", "rizz", "skibidi", "gyat", "fanum tax", "ohio", "mewing", "aura points", and other terminally online slang. Make it sound extremely chronically online and unhinged while keeping the core message.'
 };
 
 export const MODE_NAMES: Record<RewriteMode, string> = {
@@ -31,6 +33,7 @@ export const MODE_NAMES: Record<RewriteMode, string> = {
   dehumblebrag: 'De-humblebrag',
   calm: 'Calm Mode',
   facts: 'Just the Facts',
-  yoda: 'Yoda Mode'
+  yoda: 'Yoda Mode',
+  brainrot: 'Brain Rot'
 };
 
