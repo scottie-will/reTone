@@ -116,14 +116,15 @@ class ContentOrchestrator {
     
     console.log('[ContentOrchestrator] Injecting button into post:', postId);
     
-    // Inject React button
+    // Inject React button with current mode
     this.buttonContainer.injectButton(
       post,
       postId,
       container,
       () => this.handleRewriteClick(post),
       undefined,
-      false
+      false,
+      this.extensionState.rewriteMode
     );
   }
 
@@ -149,7 +150,8 @@ class ContentOrchestrator {
           postId,
           () => this.handleRewriteClick(post),
           () => this.handleToggleClick(post),
-          true
+          true,
+          this.extensionState.rewriteMode
         );
       }
     } catch (error) {
@@ -170,7 +172,8 @@ class ContentOrchestrator {
         postId,
         () => this.handleRewriteClick(post),
         undefined,
-        false
+        false,
+        this.extensionState.rewriteMode
       );
     }
   }

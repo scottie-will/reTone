@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { RewriteMode } from '@/shared/types/messages';
 
 export type ButtonState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -6,9 +7,10 @@ interface RewriteButtonProps {
   onRewrite: () => Promise<void>;
   onToggle?: () => void;
   showToggle?: boolean;
+  mode?: RewriteMode;
 }
 
-export default function RewriteButton({ onRewrite, onToggle, showToggle = false }: RewriteButtonProps) {
+export default function RewriteButton({ onRewrite, onToggle, showToggle = false, mode = 'tldr' }: RewriteButtonProps) {
   const [state, setState] = useState<ButtonState>('idle');
 
   async function handleClick() {
@@ -52,13 +54,16 @@ export default function RewriteButton({ onRewrite, onToggle, showToggle = false 
     error: 'Error'
   };
 
+  const isTLDR = mode === 'tldr';
+  
   return (
     <button
       onClick={handleClick}
       disabled={state === 'loading'}
       title={buttonText[state]}
       className={`
-        w-10 h-10 rounded-full shadow-lg
+        ${isTLDR && state === 'idle' ? 'px-3 py-2' : 'w-10 h-10'}
+        rounded-full shadow-lg
         transition-all duration-200 ease-in-out
         flex items-center justify-center
         disabled:cursor-not-allowed
@@ -82,7 +87,11 @@ export default function RewriteButton({ onRewrite, onToggle, showToggle = false 
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       )}
-      {state === 'idle' && !showToggle && (
+      {state === 'idle' && !showToggle && isTLDR && (
+        // TL;DR text mode
+        <span className="text-xs font-bold whitespace-nowrap">TL;DR</span>
+      )}
+      {state === 'idle' && !showToggle && !isTLDR && (
         // Simple sparkle/wand icon - ready to rewrite
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />

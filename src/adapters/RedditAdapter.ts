@@ -54,7 +54,7 @@ export class RedditAdapter extends BaseAdapter {
     container.className = 'rewrite-button-container';
     container.style.cssText = `
       display: block;
-      padding: 8px 12px;
+      padding: 8px 12px 8px 0;
       margin-bottom: 4px;
     `;
     

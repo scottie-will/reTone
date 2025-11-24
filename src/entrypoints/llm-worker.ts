@@ -71,7 +71,7 @@ console.log('[Worker] LLM Worker initialized and ready');
   try {
       console.log('[Worker] Starting WebLLM model initialization...');
     
-              const modelId = config.modelId || 'Llama-3.2-1B-Instruct-q4f16_1-MLC';
+              const modelId = config.modelId || 'Phi-4-mini-instruct-q4f16_1-MLC';
       console.log('[Worker] Model ID:', modelId);
     
     self.postMessage({

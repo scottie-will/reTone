@@ -7,7 +7,7 @@ export interface ModelConfig {
 }
 
 export const DEFAULT_MODEL_CONFIG: ModelConfig = {
-  modelId: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+  modelId: 'Phi-4-mini-instruct-q4f16_1-MLC',
   temperature: 0.7,
   maxTokens: 500
 };

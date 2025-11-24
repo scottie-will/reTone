@@ -4,7 +4,7 @@ A browser extension that uses local AI (WebLLM) to rewrite social media posts, r
 
 ## Features
 
-- **Local AI Processing**: Runs Llama-3.2-1B entirely in your browser using WebGPU
+- **Local AI Processing**: Runs Phi-4-mini entirely in your browser using WebGPU
 - **Multiple Rewriting Modes**:
   - Neutralize: Remove drama and cringe
   - De-cringe: Remove excessive enthusiasm
@@ -137,7 +137,7 @@ The extension uses adapters to support different social media sites:
 
 ## Model Information
 
-- **Model**: Llama-3.2-1B-Instruct-q4f16_1-MLC
+- **Model**: Phi-4-mini-instruct-q4f16_1-MLC
 - **Size**: ~200-300MB
 - **Speed**: 40-80 tokens/second
 - **Memory**: ~500-800MB RAM
@@ -206,5 +206,5 @@ MIT
 
 - Built with [WXT](https://wxt.dev/)
 - AI powered by [WebLLM](https://github.com/mlc-ai/web-llm)
-- Model: [Llama 3.2](https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct)
+- Model: [Phi-4](https://huggingface.co/microsoft/phi-4)
 

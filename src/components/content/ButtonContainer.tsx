@@ -9,7 +9,7 @@ export class ButtonContainer {
   private roots: Map<string, { container: HTMLElement; root: Root }> = new Map();
 
   /**
-   * Inject React button into a post using Shadow DOM
+   * Inject React button into a post
    */
   injectButton(
     postElement: HTMLElement,
@@ -17,7 +17,8 @@ export class ButtonContainer {
     containerElement: HTMLElement,
     onRewrite: () => Promise<void>,
     onToggle?: () => void,
-    showToggle: boolean = false
+    showToggle: boolean = false,
+    mode?: import('@/shared/types/messages').RewriteMode
   ): void {
     // Check if button already exists
     if (this.roots.has(postId)) {
@@ -36,6 +37,7 @@ export class ButtonContainer {
         onRewrite={onRewrite} 
         onToggle={onToggle}
         showToggle={showToggle}
+        mode={mode}
       />
     );
 
@@ -53,7 +55,8 @@ export class ButtonContainer {
     postId: string,
     onRewrite: () => Promise<void>,
     onToggle: () => void,
-    showToggle: boolean
+    showToggle: boolean,
+    mode?: import('@/shared/types/messages').RewriteMode
   ): void {
     const entry = this.roots.get(postId);
     if (!entry) return;
@@ -64,6 +67,7 @@ export class ButtonContainer {
         onRewrite={onRewrite}
         onToggle={onToggle}
         showToggle={showToggle}
+        mode={mode}
       />
     );
   }

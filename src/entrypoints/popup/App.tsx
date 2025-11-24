@@ -149,7 +149,7 @@ export default function App() {
       {/* Footer */}
       <div className="mt-6 pt-4 border-t border-slate-200">
         <p className="text-xs text-slate-500 text-center">
-          Running locally with Llama-3.2-1B
+          Running locally with Phi-4-mini
         </p>
       </div>
     </div>
