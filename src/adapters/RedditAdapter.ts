@@ -1,4 +1,5 @@
 import { BaseAdapter } from './BaseAdapter';
+import { logger } from '../shared/utils/logger';
 
 /**
  * Reddit Adapter - For reddit.com (New Reddit with shreddit components)
@@ -16,16 +17,16 @@ export class RedditAdapter extends BaseAdapter {
   getPostElements(): NodeListOf<HTMLElement> | HTMLElement[] {
     // New Reddit uses shreddit-post custom elements
     const posts = document.querySelectorAll('shreddit-post');
-    console.log(`[RedditAdapter] Found ${posts.length} shreddit-post elements`);
-    
+    logger.log(`[RedditAdapter] Found ${posts.length} shreddit-post elements`);
+
     // Log the first post structure for debugging
     if (posts.length > 0) {
       const firstPost = posts[0];
-      console.log('[RedditAdapter] First post:', firstPost);
-      console.log('[RedditAdapter] Has text body:', !!firstPost.querySelector('shreddit-post-text-body'));
-      console.log('[RedditAdapter] Text element:', firstPost.querySelector('[id$="-post-rtjson-content"]'));
+      logger.log('[RedditAdapter] First post:', firstPost);
+      logger.log('[RedditAdapter] Has text body:', !!firstPost.querySelector('shreddit-post-text-body'));
+      logger.log('[RedditAdapter] Text element:', firstPost.querySelector('[id$="-post-rtjson-content"]'));
     }
-    
+
     return Array.from(posts) as HTMLElement[];
   }
 

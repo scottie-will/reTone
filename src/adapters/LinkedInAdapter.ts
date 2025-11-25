@@ -1,4 +1,5 @@
 import { BaseAdapter } from './BaseAdapter';
+import { logger } from '../shared/utils/logger';
 
 /**
  * LinkedIn Adapter - For linkedin.com
@@ -78,7 +79,7 @@ export class LinkedInAdapter extends BaseAdapter {
     
     // Log when valid post is found
     if (hasPostText && !this.hasLoggedValid) {
-      console.log('[LinkedInAdapter] Valid LinkedIn post detected');
+      logger.log('[LinkedInAdapter] Valid LinkedIn post detected');
       (this as any).hasLoggedValid = true;
     }
     

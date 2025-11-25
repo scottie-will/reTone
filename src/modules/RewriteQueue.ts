@@ -3,6 +3,8 @@
  * Ensures posts are rewritten one at a time to avoid overwhelming the AI model
  */
 
+import { logger } from '../shared/utils/logger';
+
 interface QueueItem {
   postId: string;
   post: HTMLElement;
@@ -24,11 +26,11 @@ export class RewriteQueue {
     // Check if post is already in queue
     const alreadyQueued = this.queue.some(item => item.postId === postId);
     if (alreadyQueued) {
-      console.log(`[RewriteQueue] Post ${postId} already in queue, skipping`);
+      logger.log(`[RewriteQueue] Post ${postId} already in queue, skipping`);
       return;
     }
 
-    console.log(`[RewriteQueue] Enqueueing post ${postId}`);
+    logger.log(`[RewriteQueue] Enqueueing post ${postId}`);
     this.queue.push({ postId, post });
 
     // Start processing if not already processing
@@ -54,7 +56,7 @@ export class RewriteQueue {
       return;
     }
 
-    console.log(`[RewriteQueue] Processing post ${item.postId} (${this.queue.length} remaining)`);
+    logger.log(`[RewriteQueue] Processing post ${item.postId} (${this.queue.length} remaining)`);
 
     try {
       await this.onProcess(item.post);
@@ -68,7 +70,7 @@ export class RewriteQueue {
     if (this.queue.length > 0) {
       this.processNext();
     } else {
-      console.log('[RewriteQueue] Queue empty, processing complete');
+      logger.log('[RewriteQueue] Queue empty, processing complete');
     }
   }
 
@@ -90,7 +92,7 @@ export class RewriteQueue {
    * Clear all items from the queue
    */
   clear(): void {
-    console.log(`[RewriteQueue] Clearing queue (${this.queue.length} items removed)`);
+    logger.log(`[RewriteQueue] Clearing queue (${this.queue.length} items removed)`);
     this.queue = [];
     this.processing = false;
   }

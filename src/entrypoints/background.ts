@@ -3,12 +3,13 @@ import { broadcastToAllTabs } from '@/shared/utils/messaging';
 import { getExtensionState, saveExtensionState } from '@/shared/utils/storage';
 import type { ExtensionState } from '@/shared/types/messages';
 import { DEFAULT_STATE } from '@/shared/constants/config';
+import { logger } from '../shared/utils/logger';
 
 let extensionState: ExtensionState = { ...DEFAULT_STATE };
 let offscreenDocumentCreated = false;
 let creatingOffscreenDocument = false; // Lock to prevent concurrent creation
 
-console.log('Background service worker initialized');
+logger.log('Background service worker initialized');
 
 /**
  * Update extension icon based on enabled state
@@ -20,7 +21,7 @@ async function updateIcon(enabled: boolean): Promise<void> {
     await chrome.action.setIcon({
       path: iconPath
     });
-    console.log(`[ICON] Updated to ${enabled ? 'active' : 'inactive'} icon`);
+    logger.log(`[ICON] Updated to ${enabled ? 'active' : 'inactive'} icon`);
   } catch (error: any) {
     // Ignore error in dev environment (WXT's fake browser doesn't implement this)
     if (!error?.message?.includes('not implemented')) {
@@ -32,9 +33,9 @@ async function updateIcon(enabled: boolean): Promise<void> {
 
 // Function to check and restore state
 async function checkAndRestoreState() {
-  console.log('[STATE] Checking and restoring state...');
+  logger.log('[STATE] Checking and restoring state...');
   extensionState = await getExtensionState();
-  console.log('[STATE] Loaded from storage:', extensionState);
+  logger.log('[STATE] Loaded from storage:', extensionState);
   
   // Update icon based on enabled state
   await updateIcon(extensionState.enabled);
@@ -46,19 +47,19 @@ async function checkAndRestoreState() {
       contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType]
     });
     
-    console.log('[STATE] Model was marked as loaded, checking offscreen document...');
-    console.log('[STATE] Existing contexts:', contexts.length);
-    
+    logger.log('[STATE] Model was marked as loaded, checking offscreen document...');
+    logger.log('[STATE] Existing contexts:', contexts.length);
+
     if (contexts.length === 0) {
-      console.log('[STATE] ⚠ Model was loaded but offscreen document destroyed.');
-      console.log('[STATE] Auto-restoring: Creating offscreen document and reinitializing from cache...');
+      logger.log('[STATE] ⚠ Model was loaded but offscreen document destroyed.');
+      logger.log('[STATE] Auto-restoring: Creating offscreen document and reinitializing from cache...');
       try {
         await setupOffscreenDocument();
         // Give offscreen document a moment to load
         await new Promise(resolve => setTimeout(resolve, 100));
         // Reinitialize model from cache (should be instant)
         await chrome.runtime.sendMessage({ type: 'INIT_MODEL', payload: {} });
-        console.log('[STATE] ✓ Offscreen document recreated and model reinitialized from cache');
+        logger.log('[STATE] ✓ Offscreen document recreated and model reinitialized from cache');
       } catch (error) {
         console.error('[STATE] Failed to restore offscreen document:', error);
         // Only reset state if we can't recreate the document
@@ -66,10 +67,10 @@ async function checkAndRestoreState() {
         await saveExtensionState({ modelLoaded: false });
       }
     } else {
-      console.log('[STATE] ✓ Offscreen document still exists, model accessible');
+      logger.log('[STATE] ✓ Offscreen document still exists, model accessible');
     }
   } else {
-    console.log('[STATE] Model not loaded, user needs to initialize');
+    logger.log('[STATE] Model not loaded, user needs to initialize');
   }
 }
 
@@ -78,13 +79,13 @@ checkAndRestoreState();
 
 // Initialize extension state from storage on install
 chrome.runtime.onInstalled.addListener(async () => {
-  console.log('[LIFECYCLE] Extension installed');
+  logger.log('[LIFECYCLE] Extension installed');
   await checkAndRestoreState();
 });
 
 // Load state on startup
 chrome.runtime.onStartup.addListener(async () => {
-  console.log('[LIFECYCLE] Chrome started');
+  logger.log('[LIFECYCLE] Chrome started');
   await checkAndRestoreState();
 });
 
@@ -92,11 +93,11 @@ chrome.runtime.onStartup.addListener(async () => {
  * Create offscreen document for Web Worker
  */
 async function setupOffscreenDocument(): Promise<void> {
-  console.log('[DEBUG] setupOffscreenDocument called');
-  
+  logger.log('[DEBUG] setupOffscreenDocument called');
+
   // If already creating, wait a bit and return
   if (creatingOffscreenDocument) {
-    console.log('[DEBUG] Already creating offscreen document, waiting...');
+    logger.log('[DEBUG] Already creating offscreen document, waiting...');
     await new Promise(resolve => setTimeout(resolve, 100));
     return;
   }
@@ -105,23 +106,23 @@ async function setupOffscreenDocument(): Promise<void> {
     creatingOffscreenDocument = true;
     
     // Check if offscreen document already exists
-    console.log('[DEBUG] Checking for existing offscreen document...');
+    logger.log('[DEBUG] Checking for existing offscreen document...');
     const existingContexts = await chrome.runtime.getContexts({
       contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType]
     });
-    
-    console.log('[DEBUG] Existing contexts:', existingContexts.length);
-    
+
+    logger.log('[DEBUG] Existing contexts:', existingContexts.length);
+
     if (existingContexts.length > 0) {
       offscreenDocumentCreated = true;
-      console.log('[DEBUG] ✓ Offscreen document already exists');
+      logger.log('[DEBUG] ✓ Offscreen document already exists');
       return;
     }
-    
-    console.log('[DEBUG] No existing offscreen document, creating new one...');
-    
+
+    logger.log('[DEBUG] No existing offscreen document, creating new one...');
+
     const url = 'offscreen.html';
-    console.log('[DEBUG] Full offscreen URL:', chrome.runtime.getURL(url));
+    logger.log('[DEBUG] Full offscreen URL:', chrome.runtime.getURL(url));
     
     await chrome.offscreen.createDocument({
       url: url,
@@ -130,13 +131,13 @@ async function setupOffscreenDocument(): Promise<void> {
     });
     
     offscreenDocumentCreated = true;
-    console.log('[DEBUG] ✓ Offscreen document created successfully');
+    logger.log('[DEBUG] ✓ Offscreen document created successfully');
     
   } catch (error) {
     // If error is "already exists", that's actually fine
     const errorMsg = error instanceof Error ? error.message : String(error);
     if (errorMsg.includes('Only a single offscreen document')) {
-      console.log('[DEBUG] ✓ Offscreen document already exists (caught creation race)');
+      logger.log('[DEBUG] ✓ Offscreen document already exists (caught creation race)');
       offscreenDocumentCreated = true;
       return;
     }
@@ -153,7 +154,7 @@ async function setupOffscreenDocument(): Promise<void> {
  * Unified message handler for all message types
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Background received message:', message, 'from:', sender.url || 'extension');
+  logger.log('Background received message:', message, 'from:', sender.url || 'extension');
   
   // Handle messages from offscreen document
   if (sender.url && sender.url.includes('offscreen.html')) {
@@ -174,14 +175,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
             // Verify it was saved
             const verification = await chrome.storage.local.get('modelLoaded');
-            console.log('[VERIFY] Storage after save:', verification);
+            logger.log('[VERIFY] Storage after save:', verification);
 
             if (data.cached) {
-              console.log('✓ Model loaded from cache (already downloaded)');
+              logger.log('✓ Model loaded from cache (already downloaded)');
             } else {
-              console.log('✓ Model initialized and downloaded successfully');
+              logger.log('✓ Model initialized and downloaded successfully');
             }
-            console.log('✓ State saved to storage:', extensionState);
+            logger.log('✓ State saved to storage:', extensionState);
             notifyPopups({ type: 'STATE_UPDATED', state: extensionState });
           } else {
             extensionState.isInitializing = false;
@@ -194,7 +195,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return;
         
       case 'REWRITE_COMPLETE':
-        console.log('Rewrite complete:', data);
+        logger.log('Rewrite complete:', data);
         broadcastToAllTabs({ 
           type: 'REWRITE_COMPLETE', 
           requestId: data.requestId,
@@ -225,18 +226,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         case 'GET_STATE':
           // Always load fresh from storage
           extensionState = await getExtensionState();
-          console.log('[GET_STATE] Fresh state from storage:', extensionState);
-          
+          logger.log('[GET_STATE] Fresh state from storage:', extensionState);
+
           // If model was loaded, check if offscreen document exists and restore if needed
           if (extensionState.modelLoaded) {
             const contexts = await chrome.runtime.getContexts({
               contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType]
             });
-            
-            console.log('[GET_STATE] modelLoaded=true, checking offscreen contexts:', contexts.length);
-            
+
+            logger.log('[GET_STATE] modelLoaded=true, checking offscreen contexts:', contexts.length);
+
             if (contexts.length === 0) {
-              console.log('[GET_STATE] Offscreen document missing, auto-restoring...');
+              logger.log('[GET_STATE] Offscreen document missing, auto-restoring...');
               try {
                 await setupOffscreenDocument();
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -244,7 +245,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 chrome.runtime.sendMessage({ type: 'INIT_MODEL', payload: {} }).catch(err => {
                   console.error('[GET_STATE] Failed to reinit model:', err);
                 });
-                console.log('[GET_STATE] Restoration started');
+                logger.log('[GET_STATE] Restoration started');
               } catch (error) {
                 console.error('[GET_STATE] Failed to restore:', error);
                 extensionState.modelLoaded = false;
@@ -257,14 +258,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           break;
 
         case 'INIT_MODEL':
-          console.log('[INIT] Starting model initialization...');
+          logger.log('[INIT] Starting model initialization...');
           extensionState.isInitializing = true;
           await saveExtensionState({ isInitializing: true });
           notifyPopups({ type: 'STATE_UPDATED', state: extensionState });
           await setupOffscreenDocument();
-          console.log('[INIT] Offscreen document ready, sending INIT_MODEL message...');
+          logger.log('[INIT] Offscreen document ready, sending INIT_MODEL message...');
           await chrome.runtime.sendMessage({ type: 'INIT_MODEL', payload: {} });
-          console.log('[INIT] Init message sent successfully');
+          logger.log('[INIT] Init message sent successfully');
           sendResponse({ success: true });
           break;
 
@@ -302,7 +303,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             requestId: message.requestId
           };
           
-          console.log('Forwarding to offscreen with payload:', payload);
+          logger.log('Forwarding to offscreen with payload:', payload);
           await chrome.runtime.sendMessage({
             type: 'REWRITE_TEXT',
             payload: payload
@@ -337,6 +338,6 @@ function notifyPopups(message: any): void {
 }
 
 export default defineBackground(() => {
-  console.log('Background script initialized');
+  logger.log('Background script initialized');
 });
 

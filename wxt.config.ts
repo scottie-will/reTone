@@ -1,10 +1,24 @@
 import { defineConfig } from 'wxt';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   extensionApi: 'chrome',
   modules: ['@wxt-dev/module-react'],
   srcDir: 'src',
   publicDir: 'public',
+  alias: {
+    '@': path.resolve(__dirname, './src')
+  },
+  vite: () => ({
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src')
+      }
+    }
+  }),
   manifest: {
     name: 'reTone',
     description: 'Rewrite social media posts using local AI',

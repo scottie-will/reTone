@@ -5,6 +5,7 @@ import { TextReplacer } from '@/modules/TextReplacer';
 import { MessageHandler } from '@/modules/MessageHandler';
 import { ButtonContainer } from '@/components/content/ButtonContainer';
 import { RewriteQueue } from '@/modules/RewriteQueue';
+import { logger } from '@/shared/utils/logger';
 import type { ExtensionState } from '@/shared/types/messages';
 
 /**
@@ -36,24 +37,24 @@ class ContentOrchestrator {
   }
 
   async init(): Promise<void> {
-    console.log('Social Media Rewriter content script loaded');
-    
+    logger.log('Social Media Rewriter content script loaded');
+
     // Detect and load appropriate adapter
     this.loadAdapter();
-    
+
     if (!this.adapter) {
-      console.log('No matching adapter found for this page');
+      logger.log('No matching adapter found for this page');
       return;
     }
-    
-    console.log(`Loaded ${this.adapter.getSiteName()} adapter`);
-    
+
+    logger.log(`Loaded ${this.adapter.getSiteName()} adapter`);
+
     // Initialize modules
     this.textReplacer = new TextReplacer(this.adapter);
-    
+
     // Get initial state
     this.extensionState = await this.messageHandler.getState();
-    console.log('Initial state:', this.extensionState);
+    logger.log('Initial state:', this.extensionState);
     
     // Set up scanner with callback for new posts
     this.scanner = new DOMScanner(this.adapter, (post) => this.handleNewPost(post));
@@ -85,14 +86,14 @@ class ContentOrchestrator {
         }
       } catch (error) {
         // Adapter not implemented yet, continue
-        console.log(`Adapter ${adapter.getSiteName()} not ready:`, (error as Error).message);
+        logger.log(`Adapter ${adapter.getSiteName()} not ready:`, (error as Error).message);
       }
     }
   }
 
   private handleNewPost(post: HTMLElement): void {
-    console.log('[ContentOrchestrator] handleNewPost called');
-    console.log('[ContentOrchestrator] State:', {
+    logger.log('[ContentOrchestrator] handleNewPost called');
+    logger.log('[ContentOrchestrator] State:', {
       enabled: this.extensionState.enabled,
       modelLoaded: this.extensionState.modelLoaded,
       behaviorMode: this.extensionState.behaviorMode
@@ -103,23 +104,23 @@ class ContentOrchestrator {
         !this.extensionState.modelLoaded ||
         !this.adapter ||
         !this.textReplacer) {
-      console.log('[ContentOrchestrator] Skipping - requirements not met');
+      logger.log('[ContentOrchestrator] Skipping - requirements not met');
       return;
     }
 
     const postId = this.adapter.getPostId(post);
-    console.log('[ContentOrchestrator] Processing post:', postId);
+    logger.log('[ContentOrchestrator] Processing post:', postId);
 
     const container = this.adapter.getButtonContainer(post);
 
     if (!container) {
-      console.log('[ContentOrchestrator] No button container found');
+      logger.log('[ContentOrchestrator] No button container found');
       return;
     }
 
     if (this.extensionState.behaviorMode === 'manual') {
       // MANUAL MODE: Inject button for user to click
-      console.log('[ContentOrchestrator] Manual mode - injecting button');
+      logger.log('[ContentOrchestrator] Manual mode - injecting button');
       this.buttonContainer.injectButton(
         post,
         postId,
@@ -132,7 +133,7 @@ class ContentOrchestrator {
       );
     } else if (this.extensionState.behaviorMode === 'auto') {
       // AUTO MODE: Add to queue and show loading indicator
-      console.log('[ContentOrchestrator] Auto mode - enqueueing post');
+      logger.log('[ContentOrchestrator] Auto mode - enqueueing post');
       this.rewriteQueue.enqueue(postId, post);
       this.buttonContainer.injectLoadingIndicator(postId, container);
     }
@@ -142,7 +143,7 @@ class ContentOrchestrator {
     if (!this.adapter || !this.textReplacer) return;
 
     const postId = this.adapter.getPostId(post);
-    console.log(`[ContentOrchestrator] Rewrite clicked for post: ${postId}`);
+    logger.log(`[ContentOrchestrator] Rewrite clicked for post: ${postId}`);
 
     try {
       // Extract text
@@ -153,12 +154,12 @@ class ContentOrchestrator {
 
       // Replace text
       this.textReplacer.replaceText(post, rewrittenText);
-      console.log(`[ContentOrchestrator] Text replaced for post: ${postId}`);
+      logger.log(`[ContentOrchestrator] Text replaced for post: ${postId}`);
 
       // Update button to show toggle
       const container = this.adapter.getButtonContainer(post);
       if (container) {
-        console.log(`[ContentOrchestrator] Updating button to toggle mode for: ${postId}`);
+        logger.log(`[ContentOrchestrator] Updating button to toggle mode for: ${postId}`);
         this.buttonContainer.updateButton(
           postId,
           () => this.handleRewriteClick(post),
@@ -180,10 +181,10 @@ class ContentOrchestrator {
     if (!this.adapter || !this.textReplacer) return;
 
     const postId = this.adapter.getPostId(post);
-    console.log(`[ContentOrchestrator] Toggle clicked for post: ${postId}`);
+    logger.log(`[ContentOrchestrator] Toggle clicked for post: ${postId}`);
 
     if (this.textReplacer.isRewritten(post)) {
-      console.log(`[ContentOrchestrator] Post is rewritten, restoring original for: ${postId}`);
+      logger.log(`[ContentOrchestrator] Post is rewritten, restoring original for: ${postId}`);
       // Show original
       this.textReplacer.restoreOriginal(post);
       this.buttonContainer.updateButton(
@@ -203,7 +204,7 @@ class ContentOrchestrator {
     if (!this.adapter || !this.textReplacer) return;
 
     const postId = this.adapter.getPostId(post);
-    console.log(`[ContentOrchestrator] Auto-rewriting post: ${postId}`);
+    logger.log(`[ContentOrchestrator] Auto-rewriting post: ${postId}`);
 
     try {
       // Extract text
@@ -214,7 +215,7 @@ class ContentOrchestrator {
 
       // Replace text
       this.textReplacer.replaceText(post, rewrittenText);
-      console.log(`[ContentOrchestrator] Auto-rewrite complete for: ${postId}`);
+      logger.log(`[ContentOrchestrator] Auto-rewrite complete for: ${postId}`);
 
       // Show success animation, then inject toggle button
       this.buttonContainer.showLoadingSuccess(postId, () => {
@@ -247,7 +248,7 @@ class ContentOrchestrator {
   }
 
   private handleStateChange(state: ExtensionState): void {
-    console.log('State changed:', state);
+    logger.log('State changed:', state);
 
     // Check what changed
     const modeChanged = this.extensionState.rewriteMode !== state.rewriteMode;
@@ -257,17 +258,17 @@ class ContentOrchestrator {
 
     // Update all existing buttons if rewrite mode changed
     if (modeChanged && state.rewriteMode) {
-      console.log('[ContentOrchestrator] Mode changed, updating all buttons');
+      logger.log('[ContentOrchestrator] Mode changed, updating all buttons');
       this.buttonContainer.updateAllButtonsMode(state.rewriteMode);
     }
 
     // Handle behavior mode change
     if (behaviorChanged) {
-      console.log('[ContentOrchestrator] Behavior mode changed to:', state.behaviorMode);
+      logger.log('[ContentOrchestrator] Behavior mode changed to:', state.behaviorMode);
 
       if (state.behaviorMode === 'auto') {
         // Switched to auto: Clear buttons, cleanup queue, re-scan for auto-rewrite
-        console.log('[ContentOrchestrator] Switching to auto mode');
+        logger.log('[ContentOrchestrator] Switching to auto mode');
         this.buttonContainer.cleanup();
         this.buttonContainer.cleanupIndicators();
         this.rewriteQueue.clear();
@@ -278,7 +279,7 @@ class ContentOrchestrator {
         }
       } else {
         // Switched to manual: Clear queue and indicators
-        console.log('[ContentOrchestrator] Switching to manual mode');
+        logger.log('[ContentOrchestrator] Switching to manual mode');
         this.rewriteQueue.clear();
         this.buttonContainer.cleanupIndicators();
 
@@ -297,7 +298,7 @@ class ContentOrchestrator {
   }
 
   private start(): void {
-    console.log('Starting rewriter in', this.extensionState.behaviorMode, 'mode');
+    logger.log('Starting rewriter in', this.extensionState.behaviorMode, 'mode');
     
     if (!this.scanner) return;
     
@@ -309,7 +310,7 @@ class ContentOrchestrator {
   }
 
   private stop(): void {
-    console.log('Stopping rewriter');
+    logger.log('Stopping rewriter');
     
     // Stop observing
     if (this.scanner) {

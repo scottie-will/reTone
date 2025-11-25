@@ -3,12 +3,23 @@
  * This runs in an offscreen HTML page that can create Web Workers
  */
 
+// Simple logger that only outputs in development mode
+const isDev = true; // Set based on environment
+const logger = {
+  log: (...args) => {
+    if (isDev) console.log(...args);
+  },
+  error: (...args) => {
+    if (isDev) console.error(...args);
+  }
+};
+
 let llmWorker = null;
 
 function initializeWorker(config = {}) {
   // If worker already exists, just send init message to it (for reinit from cache)
   if (llmWorker) {
-    console.log('[Offscreen] Worker already exists, sending init message to existing worker...');
+    logger.log('[Offscreen] Worker already exists, sending init message to existing worker...');
     llmWorker.postMessage({
       type: 'INIT_MODEL',
       payload: config || {}
@@ -16,10 +27,10 @@ function initializeWorker(config = {}) {
     return;
   }
   
-  console.log('[Offscreen] Creating LLM worker from offscreen document...');
+  logger.log('[Offscreen] Creating LLM worker from offscreen document...');
   // WXT bundles the worker to llm-worker.js in the output
   const workerUrl = chrome.runtime.getURL('llm-worker.js');
-  console.log('[Offscreen] Worker URL:', workerUrl);
+  logger.log('[Offscreen] Worker URL:', workerUrl);
   
   try {
     llmWorker = new Worker(
@@ -27,18 +38,18 @@ function initializeWorker(config = {}) {
       { type: 'module' }
     );
     
-    console.log('[Offscreen] Worker created successfully');
-    
+    logger.log('[Offscreen] Worker created successfully');
+
     llmWorker.onmessage = (event) => {
-      console.log('[Offscreen] Message from worker:', event.data);
+      logger.log('[Offscreen] Message from worker:', event.data);
       chrome.runtime.sendMessage(event.data).catch((err) => {
-        console.log('[Offscreen] Background not available to receive message:', err);
+        logger.log('[Offscreen] Background not available to receive message:', err);
       });
     };
     
     llmWorker.onerror = (error) => {
-      console.error('[Offscreen] Worker error event:', error);
-      console.error('[Offscreen] Error details:', {
+      logger.error('[Offscreen] Worker error event:', error);
+      logger.error('[Offscreen] Error details:', {
         message: error.message,
         filename: error.filename,
         lineno: error.lineno,
@@ -61,11 +72,11 @@ function initializeWorker(config = {}) {
       payload: config || {}
     });
     
-    console.log('[Offscreen] Init message sent to worker');
+    logger.log('[Offscreen] Init message sent to worker');
     
   } catch (error) {
-    console.error('[Offscreen] Failed to create worker:', error);
-    console.error('[Offscreen] Error stack:', error.stack);
+    logger.error('[Offscreen] Failed to create worker:', error);
+    logger.error('[Offscreen] Error stack:', error.stack);
     chrome.runtime.sendMessage({
       type: 'INIT_ERROR',
       error: error.message || String(error),
@@ -74,10 +85,10 @@ function initializeWorker(config = {}) {
   }
 }
 
-console.log('Offscreen document loaded');
+logger.log('Offscreen document loaded');
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Offscreen received message:', message);
+  logger.log('Offscreen received message:', message);
   
   switch (message.type) {
     case 'INIT_MODEL':
@@ -100,7 +111,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     default:
       // Don't respond to messages not meant for offscreen document
       // Let the background script handle them
-      console.log('[Offscreen] Ignoring message type:', message.type);
+      logger.log('[Offscreen] Ignoring message type:', message.type);
       return false; // Don't keep channel open, we're not responding
   }
 });

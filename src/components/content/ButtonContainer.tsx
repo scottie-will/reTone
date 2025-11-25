@@ -3,6 +3,7 @@ import RewriteButton from './RewriteButton';
 import LoadingIndicator from './LoadingIndicator';
 import ErrorIndicator from './ErrorIndicator';
 import '../../styles/global.css';
+import { logger } from '../../shared/utils/logger';
 
 interface ButtonState {
   container: HTMLElement;
@@ -97,7 +98,7 @@ export class ButtonContainer {
       return;
     }
 
-    console.log(`[ButtonContainer] Updating button for ${postId}, showToggle: ${showToggle}`);
+    logger.log(`[ButtonContainer] Updating button for ${postId}, showToggle: ${showToggle}`);
 
     // Update stored state
     entry.onRewrite = onRewrite;
@@ -148,7 +149,7 @@ export class ButtonContainer {
    * Update all buttons with a new mode
    */
   updateAllButtonsMode(mode: import('@/shared/types/messages').RewriteMode): void {
-    console.log(`[ButtonContainer] Updating all buttons to mode: ${mode}`);
+    logger.log(`[ButtonContainer] Updating all buttons to mode: ${mode}`);
     this.roots.forEach((entry, postId) => {
       entry.mode = mode;
       entry.root.render(
@@ -192,7 +193,7 @@ export class ButtonContainer {
     this.loadingIndicators.set(postId, { container: reactHost, root });
     containerElement.appendChild(reactHost);
 
-    console.log(`[ButtonContainer] Injected loading indicator for ${postId}`);
+    logger.log(`[ButtonContainer] Injected loading indicator for ${postId}`);
   }
 
   /**
@@ -211,7 +212,7 @@ export class ButtonContainer {
           }}
         />
       );
-      console.log(`[ButtonContainer] Showing success for ${postId}`);
+      logger.log(`[ButtonContainer] Showing success for ${postId}`);
     } else {
       // If indicator doesn't exist, just call the completion callback
       onComplete();
@@ -227,7 +228,7 @@ export class ButtonContainer {
       indicator.root.unmount();
       indicator.container.remove();
       this.loadingIndicators.delete(postId);
-      console.log(`[ButtonContainer] Removed loading indicator for ${postId}`);
+      logger.log(`[ButtonContainer] Removed loading indicator for ${postId}`);
     }
   }
 
@@ -249,7 +250,7 @@ export class ButtonContainer {
     this.errorIndicators.set(postId, { container: reactHost, root });
     containerElement.appendChild(reactHost);
 
-    console.log(`[ButtonContainer] Injected error indicator for ${postId}`);
+    logger.log(`[ButtonContainer] Injected error indicator for ${postId}`);
   }
 
   /**
@@ -261,7 +262,7 @@ export class ButtonContainer {
       indicator.root.unmount();
       indicator.container.remove();
       this.errorIndicators.delete(postId);
-      console.log(`[ButtonContainer] Removed error indicator for ${postId}`);
+      logger.log(`[ButtonContainer] Removed error indicator for ${postId}`);
     }
   }
 

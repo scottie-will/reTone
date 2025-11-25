@@ -1,4 +1,5 @@
 import type { BaseAdapter } from '@/adapters/BaseAdapter';
+import { logger } from '../shared/utils/logger';
 
 /**
  * DOM Scanner - Finds and processes posts on the page
@@ -20,9 +21,9 @@ export class DOMScanner {
    * Scan page for all posts and process them
    */
   scanForPosts(): void {
-    console.log('[DOMScanner] Scanning for posts...');
+    logger.log('[DOMScanner] Scanning for posts...');
     const posts = this.adapter.getPostElements();
-    console.log(`[DOMScanner] Found ${posts.length} post elements`);
+    logger.log(`[DOMScanner] Found ${posts.length} post elements`);
     
     let validCount = 0;
     posts.forEach(post => {
@@ -32,7 +33,7 @@ export class DOMScanner {
       }
     });
     
-    console.log(`[DOMScanner] Processed ${validCount} valid posts`);
+    logger.log(`[DOMScanner] Processed ${validCount} valid posts`);
   }
 
   /**

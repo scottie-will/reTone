@@ -10,18 +10,19 @@ export default defineUnlistedScript(async () => {
   const webllm = await import('@mlc-ai/web-llm');
   const { getPromptForMode } = await import('@/shared/constants/prompts');
   const { DEFAULT_MODEL_CONFIG } = await import('@/shared/types/models');
+  const { logger } = await import('../shared/utils/logger');
 
-console.log('[Worker] LLM Worker script loading...');
-  console.log('[Worker] WebLLM imported');
+logger.log('[Worker] LLM Worker script loading...');
+  logger.log('[Worker] WebLLM imported');
 
   let engine: any = null;
 let isInitializing = false;
 
-console.log('[Worker] LLM Worker initialized and ready');
+logger.log('[Worker] LLM Worker initialized and ready');
 
 // Listen for messages from main thread
   self.addEventListener('message', async (event: MessageEvent) => {
-  console.log('[Worker] Received message:', event.data);
+  logger.log('[Worker] Received message:', event.data);
   const { type, payload } = event.data;
 
     try {
@@ -52,13 +53,13 @@ console.log('[Worker] LLM Worker initialized and ready');
   async function initializeModel(config: any = {}): Promise<void> {
   // Prevent multiple simultaneous initializations
   if (isInitializing) {
-      console.log('[Worker] Model initialization already in progress');
+      logger.log('[Worker] Model initialization already in progress');
     return;
   }
 
   // If already initialized, notify and return
   if (engine) {
-      console.log('[Worker] Model already initialized');
+      logger.log('[Worker] Model already initialized');
     self.postMessage({
       type: 'MODEL_INITIALIZED',
       success: true,
@@ -70,10 +71,10 @@ console.log('[Worker] LLM Worker initialized and ready');
   isInitializing = true;
 
   try {
-      console.log('[Worker] Starting WebLLM model initialization...');
-    
+      logger.log('[Worker] Starting WebLLM model initialization...');
+
       const modelId = config.modelId || DEFAULT_MODEL_CONFIG.modelId;
-      console.log('[Worker] Model ID:', modelId);
+      logger.log('[Worker] Model ID:', modelId);
     
     self.postMessage({
       type: 'INIT_PROGRESS',
@@ -82,10 +83,10 @@ console.log('[Worker] LLM Worker initialized and ready');
     });
 
     // Create WebLLM engine
-      console.log('[Worker] Creating MLC Engine...');
+      logger.log('[Worker] Creating MLC Engine...');
     engine = await webllm.CreateMLCEngine(modelId, {
         initProgressCallback: (progress: any) => {
-          console.log('[Worker] Init progress:', progress);
+          logger.log('[Worker] Init progress:', progress);
         
         self.postMessage({
           type: 'INIT_PROGRESS',
@@ -95,7 +96,7 @@ console.log('[Worker] LLM Worker initialized and ready');
       }
     });
 
-      console.log('[Worker] Model initialized successfully!');
+      logger.log('[Worker] Model initialized successfully!');
     
     self.postMessage({
       type: 'MODEL_INITIALIZED',
@@ -121,7 +122,7 @@ console.log('[Worker] LLM Worker initialized and ready');
 }
 
   async function rewriteText(payload: any): Promise<void> {
-    console.log('[Worker] rewriteText called with:', payload);
+    logger.log('[Worker] rewriteText called with:', payload);
   
   if (!payload || typeof payload !== 'object') {
       throw new Error('Invalid payload');
@@ -140,11 +141,11 @@ console.log('[Worker] LLM Worker initialized and ready');
   }
 
   try {
-      console.log(`[Worker] Rewriting text with mode: ${mode}`);
-      console.log('[Worker] Text to rewrite:', text);
-    
+      logger.log(`[Worker] Rewriting text with mode: ${mode}`);
+      logger.log('[Worker] Text to rewrite:', text);
+
     const prompt = getPromptForMode(mode, text);
-      console.log('[Worker] Prompt:', prompt);
+      logger.log('[Worker] Prompt:', prompt);
     
     // Use WebLLM to generate rewrite
     const messages = [
@@ -163,14 +164,14 @@ console.log('[Worker] LLM Worker initialized and ready');
 
     let rewrittenText = response.choices[0].message.content;
     
-      console.log('[Worker] Raw response:', rewrittenText);
+      logger.log('[Worker] Raw response:', rewrittenText);
     
     // Extract content between <REWRITE> and </REWRITE> tags
     if (rewrittenText) {
       const match = rewrittenText.match(/<REWRITE>([\s\S]*?)<\/REWRITE>/);
       if (match && match[1]) {
         rewrittenText = match[1].trim();
-          console.log('[Worker] Extracted rewritten text:', rewrittenText);
+          logger.log('[Worker] Extracted rewritten text:', rewrittenText);
       } else {
         // Fallback: if tags not found, use the whole response (trimmed)
           console.warn('[Worker] <REWRITE> tags not found, using full response');
@@ -178,7 +179,7 @@ console.log('[Worker] LLM Worker initialized and ready');
       }
     }
     
-      console.log('[Worker] Final rewrite:', rewrittenText);
+      logger.log('[Worker] Final rewrite:', rewrittenText);
     
     self.postMessage({
       type: 'REWRITE_COMPLETE',
