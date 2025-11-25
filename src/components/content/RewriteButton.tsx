@@ -8,9 +8,10 @@ interface RewriteButtonProps {
   onToggle?: () => void;
   showToggle?: boolean;
   mode?: RewriteMode;
+  platform?: string;
 }
 
-export default function RewriteButton({ onRewrite, onToggle, showToggle = false, mode = 'tldr' }: RewriteButtonProps) {
+export default function RewriteButton({ onRewrite, onToggle, showToggle = false, mode = 'tldr', platform }: RewriteButtonProps) {
   const [state, setState] = useState<ButtonState>('idle');
 
   async function handleClick() {
@@ -55,7 +56,8 @@ export default function RewriteButton({ onRewrite, onToggle, showToggle = false,
   };
 
   const isTLDR = mode === 'tldr';
-  
+  const isLinkedIn = platform === 'linkedin';
+
   return (
     <button
       onClick={handleClick}
@@ -63,6 +65,7 @@ export default function RewriteButton({ onRewrite, onToggle, showToggle = false,
       title={buttonText[state]}
       className={`
         ${isTLDR && state === 'idle' ? 'px-3 py-2' : 'w-10 h-10'}
+        ${isLinkedIn ? 'ml-6' : ''}
         rounded-full shadow-lg
         transition-all duration-200 ease-in-out
         flex items-center justify-center

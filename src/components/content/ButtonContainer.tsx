@@ -18,7 +18,8 @@ export class ButtonContainer {
     onRewrite: () => Promise<void>,
     onToggle?: () => void,
     showToggle: boolean = false,
-    mode?: import('@/shared/types/messages').RewriteMode
+    mode?: import('@/shared/types/messages').RewriteMode,
+    platform?: string
   ): void {
     // Check if button already exists
     if (this.roots.has(postId)) {
@@ -33,11 +34,12 @@ export class ButtonContainer {
     // Create React root and render button
     const root = createRoot(reactHost);
     root.render(
-      <RewriteButton 
-        onRewrite={onRewrite} 
+      <RewriteButton
+        onRewrite={onRewrite}
         onToggle={onToggle}
         showToggle={showToggle}
         mode={mode}
+        platform={platform}
       />
     );
 
@@ -59,7 +61,8 @@ export class ButtonContainer {
     onRewrite: () => Promise<void>,
     onToggle: () => void,
     showToggle: boolean,
-    mode?: import('@/shared/types/messages').RewriteMode
+    mode?: import('@/shared/types/messages').RewriteMode,
+    platform?: string
   ): void {
     const entry = this.roots.get(postId);
     if (!entry) {
@@ -71,11 +74,12 @@ export class ButtonContainer {
 
     // Re-render with new props
     entry.root.render(
-      <RewriteButton 
+      <RewriteButton
         onRewrite={onRewrite}
         onToggle={onToggle}
         showToggle={showToggle}
         mode={mode}
+        platform={platform}
       />
     );
   }

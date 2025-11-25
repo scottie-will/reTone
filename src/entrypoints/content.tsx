@@ -115,7 +115,7 @@ class ContentOrchestrator {
     }
     
     console.log('[ContentOrchestrator] Injecting button into post:', postId);
-    
+
     // Inject React button with current mode
     this.buttonContainer.injectButton(
       post,
@@ -124,7 +124,8 @@ class ContentOrchestrator {
       () => this.handleRewriteClick(post),
       undefined,
       false,
-      this.extensionState.rewriteMode
+      this.extensionState.rewriteMode,
+      this.adapter.getSiteName()
     );
   }
 
@@ -154,7 +155,8 @@ class ContentOrchestrator {
           () => this.handleRewriteClick(post),
           () => this.handleToggleClick(post),
           true,
-          this.extensionState.rewriteMode
+          this.extensionState.rewriteMode,
+          this.adapter.getSiteName()
         );
       } else {
         console.warn(`[ContentOrchestrator] No container found for post: ${postId}`);
@@ -180,7 +182,8 @@ class ContentOrchestrator {
         () => this.handleRewriteClick(post),
         undefined,
         false,
-        this.extensionState.rewriteMode
+        this.extensionState.rewriteMode,
+        this.adapter.getSiteName()
       );
     } else {
       console.warn(`[ContentOrchestrator] Post ${postId} is not marked as rewritten`);
