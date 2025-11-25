@@ -216,23 +216,22 @@ class ContentOrchestrator {
       this.textReplacer.replaceText(post, rewrittenText);
       console.log(`[ContentOrchestrator] Auto-rewrite complete for: ${postId}`);
 
-      // Remove loading indicator
-      this.buttonContainer.removeLoadingIndicator(postId);
-
-      // Inject toggle button (shows after successful rewrite)
-      const container = this.adapter.getButtonContainer(post);
-      if (container) {
-        this.buttonContainer.injectButton(
-          post,
-          postId,
-          container,
-          () => this.handleRewriteClick(post),
-          () => this.handleToggleClick(post),
-          true, // showToggle = true
-          this.extensionState.rewriteMode,
-          this.adapter.getSiteName()
-        );
-      }
+      // Show success animation, then inject toggle button
+      this.buttonContainer.showLoadingSuccess(postId, () => {
+        const container = this.adapter!.getButtonContainer(post);
+        if (container) {
+          this.buttonContainer.injectButton(
+            post,
+            postId,
+            container,
+            () => this.handleRewriteClick(post),
+            () => this.handleToggleClick(post),
+            true, // showToggle = true
+            this.extensionState.rewriteMode,
+            this.adapter!.getSiteName()
+          );
+        }
+      });
     } catch (error) {
       console.error(`[ContentOrchestrator] Auto-rewrite failed for ${postId}:`, error);
 

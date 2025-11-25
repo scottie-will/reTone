@@ -196,6 +196,29 @@ export class ButtonContainer {
   }
 
   /**
+   * Show success state on loading indicator, then remove after delay
+   */
+  showLoadingSuccess(postId: string, onComplete: () => void): void {
+    const indicator = this.loadingIndicators.get(postId);
+    if (indicator) {
+      // Re-render with success state
+      indicator.root.render(
+        <LoadingIndicator
+          state="success"
+          onComplete={() => {
+            this.removeLoadingIndicator(postId);
+            onComplete();
+          }}
+        />
+      );
+      console.log(`[ButtonContainer] Showing success for ${postId}`);
+    } else {
+      // If indicator doesn't exist, just call the completion callback
+      onComplete();
+    }
+  }
+
+  /**
    * Remove loading indicator
    */
   removeLoadingIndicator(postId: string): void {
