@@ -44,3 +44,9 @@ coverage/
 *.tmp
 *.temp
 .cache/
+
+
+#MCP Tools
+.mcp.json
+
+.serena
