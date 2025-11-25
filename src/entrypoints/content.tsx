@@ -130,22 +130,25 @@ class ContentOrchestrator {
 
   private async handleRewriteClick(post: HTMLElement): Promise<void> {
     if (!this.adapter || !this.textReplacer) return;
-    
+
     const postId = this.adapter.getPostId(post);
-    
+    console.log(`[ContentOrchestrator] Rewrite clicked for post: ${postId}`);
+
     try {
       // Extract text
       const originalText = this.textReplacer.extractText(post);
-      
+
       // Send rewrite request
       const rewrittenText = await this.messageHandler.sendRewriteRequest(originalText, postId);
-      
+
       // Replace text
       this.textReplacer.replaceText(post, rewrittenText);
-      
+      console.log(`[ContentOrchestrator] Text replaced for post: ${postId}`);
+
       // Update button to show toggle
       const container = this.adapter.getButtonContainer(post);
       if (container) {
+        console.log(`[ContentOrchestrator] Updating button to toggle mode for: ${postId}`);
         this.buttonContainer.updateButton(
           postId,
           () => this.handleRewriteClick(post),
@@ -153,6 +156,8 @@ class ContentOrchestrator {
           true,
           this.extensionState.rewriteMode
         );
+      } else {
+        console.warn(`[ContentOrchestrator] No container found for post: ${postId}`);
       }
     } catch (error) {
       console.error('Rewrite failed:', error);
@@ -162,10 +167,12 @@ class ContentOrchestrator {
 
   private handleToggleClick(post: HTMLElement): void {
     if (!this.adapter || !this.textReplacer) return;
-    
+
     const postId = this.adapter.getPostId(post);
-    
+    console.log(`[ContentOrchestrator] Toggle clicked for post: ${postId}`);
+
     if (this.textReplacer.isRewritten(post)) {
+      console.log(`[ContentOrchestrator] Post is rewritten, restoring original for: ${postId}`);
       // Show original
       this.textReplacer.restoreOriginal(post);
       this.buttonContainer.updateButton(
@@ -175,6 +182,8 @@ class ContentOrchestrator {
         false,
         this.extensionState.rewriteMode
       );
+    } else {
+      console.warn(`[ContentOrchestrator] Post ${postId} is not marked as rewritten`);
     }
   }
 

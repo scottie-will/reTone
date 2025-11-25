@@ -51,12 +51,19 @@ export class LinkedInAdapter extends BaseAdapter {
   }
 
   getPostId(post: HTMLElement): string {
+    // Check if we've already assigned a stable ID
+    if (post.dataset.rewriterId) {
+      return post.dataset.rewriterId;
+    }
+
     // Try to get LinkedIn's data-id attribute
     const dataId = post.getAttribute('data-id');
-    if (dataId) return dataId;
-
-    // Fallback to timestamp-based ID
-    return `linkedin-${Date.now()}`;
+    const stableId = dataId || `linkedin-${Date.now()}-${Math.random()}`;
+    
+    // Store it on the element for future calls
+    post.dataset.rewriterId = stableId;
+    
+    return stableId;
   }
 
   isValidPost(element: HTMLElement): boolean {

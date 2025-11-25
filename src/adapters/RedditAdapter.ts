@@ -65,10 +65,20 @@ export class RedditAdapter extends BaseAdapter {
   }
 
   getPostId(post: HTMLElement): string {
+    // Check if we've already assigned a stable ID
+    if (post.dataset.rewriterId) {
+      return post.dataset.rewriterId;
+    }
+
     // Try to get the post-id attribute
-    return post.getAttribute('post-id') || 
+    const stableId = post.getAttribute('post-id') || 
            post.getAttribute('id') || 
            `reddit-${Date.now()}-${Math.random()}`;
+    
+    // Store it on the element for future calls
+    post.dataset.rewriterId = stableId;
+    
+    return stableId;
   }
 
   isValidPost(element: HTMLElement): boolean {

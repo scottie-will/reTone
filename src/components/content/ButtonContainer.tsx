@@ -51,6 +51,9 @@ export class ButtonContainer {
   /**
    * Update button to show toggle state
    */
+  /**
+   * Update button to show toggle state
+   */
   updateButton(
     postId: string,
     onRewrite: () => Promise<void>,
@@ -59,7 +62,12 @@ export class ButtonContainer {
     mode?: import('@/shared/types/messages').RewriteMode
   ): void {
     const entry = this.roots.get(postId);
-    if (!entry) return;
+    if (!entry) {
+      console.warn(`[ButtonContainer] Cannot update button for ${postId} - not found in roots`);
+      return;
+    }
+
+    console.log(`[ButtonContainer] Updating button for ${postId}, showToggle: ${showToggle}`);
 
     // Re-render with new props
     entry.root.render(
