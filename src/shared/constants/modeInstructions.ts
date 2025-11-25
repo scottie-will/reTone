@@ -27,6 +27,6 @@ export const MODE_NAMES: Record<RewriteMode, string> = {
 export const MODE_BUTTON_TEXT: Record<RewriteMode, string | null> = {
   tldr: 'TL;DR',
   debuzzword: 'deBuzz',
-  brainrot: 'Rot'
+  brainrot: 'Brain Rot'
 };
 
