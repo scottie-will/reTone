@@ -19,3 +19,14 @@ export const MODE_NAMES: Record<RewriteMode, string> = {
   brainrot: 'Brain Rot'
 };
 
+/**
+ * Button text for each mode
+ * If a mode has button text defined, the button will display that text
+ * Otherwise, it will display the default icon
+ */
+export const MODE_BUTTON_TEXT: Record<RewriteMode, string | null> = {
+  tldr: 'TL;DR',
+  debuzzword: 'deBuzz',
+  brainrot: 'Rot'
+};
+
