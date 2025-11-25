@@ -2,11 +2,20 @@
 
 A browser extension that uses local AI to rewrite social media posts with different styles and tones.
 
+[[Features](#features)] [[Tech Stack](#tech-stack)] [[Installation](#installation)] [[Usage](#usage)] [[Testing](#testing-locally)] [[Browser Support](#browser-support)] [[Contributing](#contributing)] [[License](#license)]
+
 ## Features
 
 - **Multiple Rewriting Modes**: TL;DR, De-buzzword, Brain Rot
 - **Privacy First**: All processing happens locally in your browser
 - **No Internet Required**: Once initialized, works completely offline
+
+## Tech Stack
+
+- React + TypeScript + Tailwind CSS
+- WXT (browser extension framework)
+- WebLLM (local AI inference)
+
 
 ## Installation
 
@@ -88,12 +97,6 @@ You can also test directly on:
 - LinkedIn feed (avoid profile pages as posts are truncated)
 
 The `npm run dev` command watches for file changes and automatically reloads the extension.
-
-## Tech Stack
-
-- React + TypeScript + Tailwind CSS
-- WXT (browser extension framework)
-- WebLLM (local AI inference)
 
 ## Browser Support
 
