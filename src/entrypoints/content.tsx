@@ -321,10 +321,9 @@ class ContentOrchestrator {
 // Initialize orchestrator
 export default defineContentScript({
   matches: [
-    'https://www.reddit.com/*', 
+    'https://www.reddit.com/*',
     'https://www.linkedin.com/*',
-    'http://localhost/8080/*',
-    'http://localhost:59500/*'
+    'http://localhost/*'
   ],
   excludeMatches: ['*://*.reddit.com/chat/*'],
   main() {
