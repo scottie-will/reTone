@@ -2,11 +2,21 @@ import { createRoot, Root } from 'react-dom/client';
 import RewriteButton from './RewriteButton';
 import '../../styles/global.css';
 
+interface ButtonState {
+  container: HTMLElement;
+  root: Root;
+  onRewrite: () => Promise<void>;
+  onToggle?: () => void;
+  showToggle: boolean;
+  mode?: import('@/shared/types/messages').RewriteMode;
+  platform?: string;
+}
+
 /**
  * Manager for React button components using Shadow DOM for isolation
  */
 export class ButtonContainer {
-  private roots: Map<string, { container: HTMLElement; root: Root }> = new Map();
+  private roots: Map<string, ButtonState> = new Map();
 
   /**
    * Inject React button into a post
@@ -43,8 +53,16 @@ export class ButtonContainer {
       />
     );
 
-    // Store root for cleanup
-    this.roots.set(postId, { container: reactHost, root });
+    // Store root and state for cleanup and updates
+    this.roots.set(postId, {
+      container: reactHost,
+      root,
+      onRewrite,
+      onToggle,
+      showToggle,
+      mode,
+      platform
+    });
 
     // Append to DOM
     containerElement.appendChild(reactHost);
@@ -71,6 +89,13 @@ export class ButtonContainer {
     }
 
     console.log(`[ButtonContainer] Updating button for ${postId}, showToggle: ${showToggle}`);
+
+    // Update stored state
+    entry.onRewrite = onRewrite;
+    entry.onToggle = onToggle;
+    entry.showToggle = showToggle;
+    entry.mode = mode;
+    entry.platform = platform;
 
     // Re-render with new props
     entry.root.render(
@@ -101,6 +126,32 @@ export class ButtonContainer {
    */
   hasButton(postId: string): boolean {
     return this.roots.has(postId);
+  }
+
+  /**
+   * Get all button post IDs
+   */
+  getAllButtonIds(): string[] {
+    return Array.from(this.roots.keys());
+  }
+
+  /**
+   * Update all buttons with a new mode
+   */
+  updateAllButtonsMode(mode: import('@/shared/types/messages').RewriteMode): void {
+    console.log(`[ButtonContainer] Updating all buttons to mode: ${mode}`);
+    this.roots.forEach((entry, postId) => {
+      entry.mode = mode;
+      entry.root.render(
+        <RewriteButton
+          onRewrite={entry.onRewrite}
+          onToggle={entry.onToggle}
+          showToggle={entry.showToggle}
+          mode={mode}
+          platform={entry.platform}
+        />
+      );
+    });
   }
 
   /**

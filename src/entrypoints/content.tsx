@@ -192,8 +192,18 @@ class ContentOrchestrator {
 
   private handleStateChange(state: ExtensionState): void {
     console.log('State changed:', state);
+
+    // Check if mode changed
+    const modeChanged = this.extensionState.rewriteMode !== state.rewriteMode;
+
     this.extensionState = state;
-    
+
+    // Update all existing buttons if mode changed
+    if (modeChanged && state.rewriteMode) {
+      console.log('[ContentOrchestrator] Mode changed, updating all buttons');
+      this.buttonContainer.updateAllButtonsMode(state.rewriteMode);
+    }
+
     if (state.enabled && state.modelLoaded) {
       this.start();
     } else {
