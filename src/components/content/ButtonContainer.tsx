@@ -1,5 +1,7 @@
 import { createRoot, Root } from 'react-dom/client';
 import RewriteButton from './RewriteButton';
+import LoadingIndicator from './LoadingIndicator';
+import ErrorIndicator from './ErrorIndicator';
 import '../../styles/global.css';
 
 interface ButtonState {
@@ -12,11 +14,18 @@ interface ButtonState {
   platform?: string;
 }
 
+interface IndicatorState {
+  container: HTMLElement;
+  root: Root;
+}
+
 /**
  * Manager for React button components using Shadow DOM for isolation
  */
 export class ButtonContainer {
   private roots: Map<string, ButtonState> = new Map();
+  private loadingIndicators: Map<string, IndicatorState> = new Map();
+  private errorIndicators: Map<string, IndicatorState> = new Map();
 
   /**
    * Inject React button into a post
@@ -163,6 +172,91 @@ export class ButtonContainer {
       entry.container.remove();
     });
     this.roots.clear();
+  }
+
+  /**
+   * Inject loading indicator into a post
+   */
+  injectLoadingIndicator(postId: string, containerElement: HTMLElement): void {
+    // Remove any existing indicator for this post
+    this.removeLoadingIndicator(postId);
+    this.removeErrorIndicator(postId);
+
+    const reactHost = document.createElement('div');
+    reactHost.className = 'rewriter-loading-host';
+    reactHost.style.cssText = 'display: inline-block;';
+
+    const root = createRoot(reactHost);
+    root.render(<LoadingIndicator />);
+
+    this.loadingIndicators.set(postId, { container: reactHost, root });
+    containerElement.appendChild(reactHost);
+
+    console.log(`[ButtonContainer] Injected loading indicator for ${postId}`);
+  }
+
+  /**
+   * Remove loading indicator
+   */
+  removeLoadingIndicator(postId: string): void {
+    const indicator = this.loadingIndicators.get(postId);
+    if (indicator) {
+      indicator.root.unmount();
+      indicator.container.remove();
+      this.loadingIndicators.delete(postId);
+      console.log(`[ButtonContainer] Removed loading indicator for ${postId}`);
+    }
+  }
+
+  /**
+   * Inject error indicator into a post
+   */
+  injectErrorIndicator(postId: string, containerElement: HTMLElement): void {
+    // Remove any existing indicator for this post
+    this.removeLoadingIndicator(postId);
+    this.removeErrorIndicator(postId);
+
+    const reactHost = document.createElement('div');
+    reactHost.className = 'rewriter-error-host';
+    reactHost.style.cssText = 'display: inline-block;';
+
+    const root = createRoot(reactHost);
+    root.render(<ErrorIndicator />);
+
+    this.errorIndicators.set(postId, { container: reactHost, root });
+    containerElement.appendChild(reactHost);
+
+    console.log(`[ButtonContainer] Injected error indicator for ${postId}`);
+  }
+
+  /**
+   * Remove error indicator
+   */
+  removeErrorIndicator(postId: string): void {
+    const indicator = this.errorIndicators.get(postId);
+    if (indicator) {
+      indicator.root.unmount();
+      indicator.container.remove();
+      this.errorIndicators.delete(postId);
+      console.log(`[ButtonContainer] Removed error indicator for ${postId}`);
+    }
+  }
+
+  /**
+   * Clean up all indicators (loading and error)
+   */
+  cleanupIndicators(): void {
+    this.loadingIndicators.forEach(indicator => {
+      indicator.root.unmount();
+      indicator.container.remove();
+    });
+    this.loadingIndicators.clear();
+
+    this.errorIndicators.forEach(indicator => {
+      indicator.root.unmount();
+      indicator.container.remove();
+    });
+    this.errorIndicators.clear();
   }
 }
 

@@ -4,6 +4,7 @@ import { DOMScanner } from '@/modules/DOMScanner';
 import { TextReplacer } from '@/modules/TextReplacer';
 import { MessageHandler } from '@/modules/MessageHandler';
 import { ButtonContainer } from '@/components/content/ButtonContainer';
+import { RewriteQueue } from '@/modules/RewriteQueue';
 import type { ExtensionState } from '@/shared/types/messages';
 
 /**
@@ -17,17 +18,20 @@ class ContentOrchestrator {
   private textReplacer: TextReplacer | null = null;
   private messageHandler: MessageHandler;
   private extensionState: ExtensionState;
+  private rewriteQueue: RewriteQueue;
 
   constructor() {
     this.buttonContainer = new ButtonContainer();
     this.messageHandler = new MessageHandler();
+    this.rewriteQueue = new RewriteQueue((post) => this.handleAutoRewrite(post));
     this.extensionState = {
       enabled: false,
       modelLoaded: false,
       rewriteMode: 'tldr',
-      behaviorMode: 'manual'
+      behaviorMode: 'manual',
+      isInitializing: false
     };
-    
+
     this.init();
   }
 
@@ -93,40 +97,45 @@ class ContentOrchestrator {
       modelLoaded: this.extensionState.modelLoaded,
       behaviorMode: this.extensionState.behaviorMode
     });
-    
-    // Only add buttons if extension is enabled and in manual mode
-    if (!this.extensionState.enabled || 
+
+    // Validate basic requirements
+    if (!this.extensionState.enabled ||
         !this.extensionState.modelLoaded ||
-        this.extensionState.behaviorMode !== 'manual' ||
         !this.adapter ||
         !this.textReplacer) {
-      console.log('[ContentOrchestrator] Skipping button injection - requirements not met');
+      console.log('[ContentOrchestrator] Skipping - requirements not met');
       return;
     }
-    
+
     const postId = this.adapter.getPostId(post);
     console.log('[ContentOrchestrator] Processing post:', postId);
-    
+
     const container = this.adapter.getButtonContainer(post);
-    
+
     if (!container) {
       console.log('[ContentOrchestrator] No button container found');
       return;
     }
-    
-    console.log('[ContentOrchestrator] Injecting button into post:', postId);
 
-    // Inject React button with current mode
-    this.buttonContainer.injectButton(
-      post,
-      postId,
-      container,
-      () => this.handleRewriteClick(post),
-      undefined,
-      false,
-      this.extensionState.rewriteMode,
-      this.adapter.getSiteName()
-    );
+    if (this.extensionState.behaviorMode === 'manual') {
+      // MANUAL MODE: Inject button for user to click
+      console.log('[ContentOrchestrator] Manual mode - injecting button');
+      this.buttonContainer.injectButton(
+        post,
+        postId,
+        container,
+        () => this.handleRewriteClick(post),
+        undefined,
+        false,
+        this.extensionState.rewriteMode,
+        this.adapter.getSiteName()
+      );
+    } else if (this.extensionState.behaviorMode === 'auto') {
+      // AUTO MODE: Add to queue and show loading indicator
+      console.log('[ContentOrchestrator] Auto mode - enqueueing post');
+      this.rewriteQueue.enqueue(postId, post);
+      this.buttonContainer.injectLoadingIndicator(postId, container);
+    }
   }
 
   private async handleRewriteClick(post: HTMLElement): Promise<void> {
@@ -190,18 +199,95 @@ class ContentOrchestrator {
     }
   }
 
+  private async handleAutoRewrite(post: HTMLElement): Promise<void> {
+    if (!this.adapter || !this.textReplacer) return;
+
+    const postId = this.adapter.getPostId(post);
+    console.log(`[ContentOrchestrator] Auto-rewriting post: ${postId}`);
+
+    try {
+      // Extract text
+      const originalText = this.textReplacer.extractText(post);
+
+      // Send rewrite request
+      const rewrittenText = await this.messageHandler.sendRewriteRequest(originalText, postId);
+
+      // Replace text
+      this.textReplacer.replaceText(post, rewrittenText);
+      console.log(`[ContentOrchestrator] Auto-rewrite complete for: ${postId}`);
+
+      // Remove loading indicator
+      this.buttonContainer.removeLoadingIndicator(postId);
+
+      // Inject toggle button (shows after successful rewrite)
+      const container = this.adapter.getButtonContainer(post);
+      if (container) {
+        this.buttonContainer.injectButton(
+          post,
+          postId,
+          container,
+          () => this.handleRewriteClick(post),
+          () => this.handleToggleClick(post),
+          true, // showToggle = true
+          this.extensionState.rewriteMode,
+          this.adapter.getSiteName()
+        );
+      }
+    } catch (error) {
+      console.error(`[ContentOrchestrator] Auto-rewrite failed for ${postId}:`, error);
+
+      // Remove loading indicator
+      this.buttonContainer.removeLoadingIndicator(postId);
+
+      // Show error indicator
+      const container = this.adapter.getButtonContainer(post);
+      if (container) {
+        this.buttonContainer.injectErrorIndicator(postId, container);
+      }
+    }
+  }
+
   private handleStateChange(state: ExtensionState): void {
     console.log('State changed:', state);
 
-    // Check if mode changed
+    // Check what changed
     const modeChanged = this.extensionState.rewriteMode !== state.rewriteMode;
+    const behaviorChanged = this.extensionState.behaviorMode !== state.behaviorMode;
 
     this.extensionState = state;
 
-    // Update all existing buttons if mode changed
+    // Update all existing buttons if rewrite mode changed
     if (modeChanged && state.rewriteMode) {
       console.log('[ContentOrchestrator] Mode changed, updating all buttons');
       this.buttonContainer.updateAllButtonsMode(state.rewriteMode);
+    }
+
+    // Handle behavior mode change
+    if (behaviorChanged) {
+      console.log('[ContentOrchestrator] Behavior mode changed to:', state.behaviorMode);
+
+      if (state.behaviorMode === 'auto') {
+        // Switched to auto: Clear buttons, cleanup queue, re-scan for auto-rewrite
+        console.log('[ContentOrchestrator] Switching to auto mode');
+        this.buttonContainer.cleanup();
+        this.buttonContainer.cleanupIndicators();
+        this.rewriteQueue.clear();
+
+        // Re-scan posts to auto-rewrite them
+        if (this.scanner && state.enabled && state.modelLoaded) {
+          this.scanner.scanForPosts();
+        }
+      } else {
+        // Switched to manual: Clear queue and indicators
+        console.log('[ContentOrchestrator] Switching to manual mode');
+        this.rewriteQueue.clear();
+        this.buttonContainer.cleanupIndicators();
+
+        // Re-scan posts to inject manual buttons
+        if (this.scanner && state.enabled && state.modelLoaded) {
+          this.scanner.scanForPosts();
+        }
+      }
     }
 
     if (state.enabled && state.modelLoaded) {
