@@ -80,16 +80,18 @@ Output (rewritten with same break structure):
 <span>Line one</span><span><br></span><span>Line two (consecutive)</span><span><br></span><span><br></span><span>Line three (with blank line above)</span>
 </REWRITE>`;
   } else {
+    // Reddit and other platforms - simpler HTML rules since they already work well
     formatInstructions = `
-OUTPUT FORMAT:
-- The input is in Markdown format
-- Output your rewritten text as Markdown
-- Preserve all links [text](url) and formatting
+HTML OUTPUT FORMAT:
+- The input is HTML and you should output HTML
+- Preserve the general HTML structure and formatting from the input
+- Preserve all links with <a> tags and href attributes
+- Use standard HTML tags like <p>, <strong>, <em>, <br>, etc.
 - Maintain paragraph structure and line breaks`;
     
     responseExample = `
 <REWRITE>
-your rewritten text here in markdown format
+<p>Your rewritten text here with proper HTML formatting</p>
 </REWRITE>`;
   }
 
