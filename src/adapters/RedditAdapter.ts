@@ -45,23 +45,27 @@ export class RedditAdapter extends BaseAdapter {
     // Check if we already have a button container
     let container = post.querySelector<HTMLElement>('.rewrite-button-container');
     if (container) return container;
-    
+
     // Find the shreddit-post-text-body element
     const textBody = post.querySelector('shreddit-post-text-body');
-    if (!textBody || !textBody.parentNode) return null;
-    
-    // Create container to position just above the text body
+    if (!textBody) return null;
+
+    // Get the actual content div with the rtjson-content id (the text container we're rewriting)
+    const contentDiv = textBody.querySelector('[id$="-post-rtjson-content"]');
+    if (!contentDiv || !contentDiv.parentNode) return null;
+
+    // Create container to position at the top of the text container (like LinkedIn)
     container = document.createElement('div');
     container.className = 'rewrite-button-container';
     container.style.cssText = `
       display: block;
-      padding: 8px 12px 8px 0;
-      margin-bottom: 4px;
+      padding: 8px 0 8px 0;
+      margin-bottom: 8px;
     `;
-    
-    // Insert container immediately before the text body element
-    textBody.parentNode.insertBefore(container, textBody);
-    
+
+    // Insert container immediately before the content div (inside text body, at the top)
+    contentDiv.parentNode.insertBefore(container, contentDiv);
+
     return container;
   }
 
