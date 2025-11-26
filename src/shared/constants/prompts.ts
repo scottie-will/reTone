@@ -13,8 +13,8 @@ export const REWRITE_MODES = MODE_NAMES;
 /**
  * Generate a complete prompt for a specific rewrite mode
  */
-export function getPromptForMode(mode: RewriteMode, text: string): string {
+export function getPromptForMode(mode: RewriteMode, text: string, platform?: string): string {
   const modeInstruction = MODE_INSTRUCTIONS[mode];
-  return buildPrompt(modeInstruction, text);
+  return buildPrompt(modeInstruction, text, platform);
 }
 

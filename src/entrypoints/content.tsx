@@ -149,8 +149,9 @@ class ContentOrchestrator {
       // Extract text
       const originalText = this.textReplacer.extractText(post);
 
-      // Send rewrite request
-      const rewrittenText = await this.messageHandler.sendRewriteRequest(originalText, postId);
+      // Send rewrite request with platform information
+      const platform = this.adapter.getSiteName();
+      const rewrittenText = await this.messageHandler.sendRewriteRequest(originalText, postId, platform);
 
       // Replace text
       this.textReplacer.replaceText(post, rewrittenText);
@@ -210,8 +211,9 @@ class ContentOrchestrator {
       // Extract text
       const originalText = this.textReplacer.extractText(post);
 
-      // Send rewrite request
-      const rewrittenText = await this.messageHandler.sendRewriteRequest(originalText, postId);
+      // Send rewrite request with platform information
+      const platform = this.adapter.getSiteName();
+      const rewrittenText = await this.messageHandler.sendRewriteRequest(originalText, postId, platform);
 
       // Replace text
       this.textReplacer.replaceText(post, rewrittenText);

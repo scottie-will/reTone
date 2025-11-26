@@ -128,8 +128,8 @@ logger.log('[Worker] LLM Worker initialized and ready');
       throw new Error('Invalid payload');
   }
   
-  const { text, mode, requestId } = payload;
-  
+  const { text, mode, requestId, platform } = payload;
+
   if (!engine) {
     self.postMessage({
       type: 'REWRITE_COMPLETE',
@@ -141,10 +141,10 @@ logger.log('[Worker] LLM Worker initialized and ready');
   }
 
   try {
-      logger.log(`[Worker] Rewriting text with mode: ${mode}`);
+      logger.log(`[Worker] Rewriting text with mode: ${mode}, platform: ${platform}`);
       logger.log('[Worker] Text to rewrite:', text);
 
-    const prompt = getPromptForMode(mode, text);
+    const prompt = getPromptForMode(mode, text, platform);
       logger.log('[Worker] Prompt:', prompt);
     
     // Use WebLLM to generate rewrite

@@ -33,7 +33,7 @@ export class MessageHandler {
   /**
    * Send rewrite request to background
    */
-  async sendRewriteRequest(text: string, postId: string): Promise<string> {
+  async sendRewriteRequest(text: string, postId: string, platform?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const requestId = `${postId}-${Date.now()}`;
       
@@ -53,7 +53,8 @@ export class MessageHandler {
           type: 'REWRITE_TEXT',
           text: text,
           mode: state.rewriteMode,
-          requestId: requestId
+          requestId: requestId,
+          platform: platform
         }, (response: { success: boolean; error?: string }) => {
           if (!response || !response.success) {
             this.pendingRequests.delete(requestId);

@@ -32,9 +32,16 @@ export class TextReplacer {
       throw new Error('No text element found in post');
     }
     
-    // Convert HTML to Markdown to preserve structure and links
-    const markdown = this.turndownService.turndown(textElement.innerHTML);
-    return markdown.trim();
+    const siteName = this.adapter.getSiteName();
+    
+    if (siteName === 'linkedin') {
+      // LinkedIn: Return raw HTML directly
+      return textElement.innerHTML.trim();
+    } else {
+      // Other platforms: Convert HTML to Markdown to preserve structure and links
+      const markdown = this.turndownService.turndown(textElement.innerHTML);
+      return markdown.trim();
+    }
   }
 
   /**
@@ -49,31 +56,23 @@ export class TextReplacer {
 
     const dataset = textElement.dataset as { originalHtml?: string; originalStyles?: string };
 
-    // Store original HTML and computed styles if not already stored
+    // Store original HTML if not already stored
     if (!dataset.originalHtml) {
       dataset.originalHtml = textElement.innerHTML;
-      // Store inline styles
       dataset.originalStyles = textElement.getAttribute('style') || '';
     }
 
-    // Convert markdown back to HTML
-    let html = marked.parse(newText, { async: false }) as string;
-
-    // Platform-specific handling
     const siteName = this.adapter.getSiteName();
+    let html: string;
 
     if (siteName === 'linkedin') {
-      // LinkedIn: Use spans instead of p tags to match LinkedIn's inline structure
-      html = html
-        .replace(/<p>/g, '<span>')
-        .replace(/<\/p>/g, '</span><br><br>')
-        .replace(/(<br><br>)+$/g, ''); // Remove trailing breaks
-
-      // Wrap content in a span that inherits all parent styles
-      // This ensures font-family, font-size, etc. are preserved from LinkedIn's span[dir="ltr"]
-      html = `<span style="all: inherit; display: inline;">${html}</span>`;
+      // LinkedIn: LLM already generated HTML in the correct format
+      // Just insert it directly - no conversion needed!
+      html = newText;
+    } else {
+      // Reddit and other platforms: Convert markdown to HTML
+      html = marked.parse(newText, { async: false }) as string;
     }
-    // Reddit and other platforms: Use the HTML as-is, they handle it perfectly
 
     // Replace HTML content
     textElement.innerHTML = html;

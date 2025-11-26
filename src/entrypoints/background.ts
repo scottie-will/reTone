@@ -296,19 +296,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendResponse({ success: false, error: 'Model not loaded' });
             break;
           }
-          
+
           const payload = {
             text: message.text,
             mode: message.mode || extensionState.rewriteMode,
-            requestId: message.requestId
+            requestId: message.requestId,
+            platform: message.platform
           };
-          
+
           logger.log('Forwarding to offscreen with payload:', payload);
           await chrome.runtime.sendMessage({
             type: 'REWRITE_TEXT',
             payload: payload
           });
-          
+
           sendResponse({ success: true });
           break;
 

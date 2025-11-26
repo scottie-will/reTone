@@ -18,7 +18,7 @@ export type MessageToBackground =
   | { type: 'SET_ENABLED'; enabled: boolean }
   | { type: 'SET_REWRITE_MODE'; mode: RewriteMode }
   | { type: 'SET_BEHAVIOR_MODE'; behavior: BehaviorMode }
-  | { type: 'REWRITE_TEXT'; text: string; mode?: RewriteMode; requestId: string };
+  | { type: 'REWRITE_TEXT'; text: string; mode?: RewriteMode; requestId: string; platform?: string };
 
 // Messages from background to popup/content
 export type MessageFromBackground =
