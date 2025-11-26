@@ -20,8 +20,8 @@ export default defineConfig({
     }
   }),
   manifest: {
-    name: 'reTone',
-    description: 'Rewrite social media posts using local AI',
+    name: 'reTone: Rewrite Your Social Media Experience with Local AI',
+    description: 'Get TL;DR summaries, de-buzzword rewrites, and even brainrot remixes of posts on your feeds',
     icons: {
       '16': 'icons/Logo128.png',
       '32': 'icons/Logo128.png',
