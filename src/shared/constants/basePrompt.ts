@@ -41,8 +41,11 @@ The input is LinkedIn HTML and you MUST output LinkedIn HTML in the EXACT same f
 
 IMPORTANT LINE BREAK RULES:
 - LinkedIn does NOT automatically create new lines between <span> tags
-- You MUST explicitly use <span><br></span> for EVERY line break (equivalent to \\n)
-- For a blank line (paragraph break), use TWO: <span><br></span><span><br></span>
+- To go to the next line (like \\n), use ONE: <span><br></span>
+- To go to the next line AND add a blank line (paragraph break), use TWO: <span><br></span><span><br></span>
+- Think of it as:
+  * One <span><br></span> = move to next line (no blank line between)
+  * Two <span><br></span><span><br></span> = move to next line AND leave a blank line (paragraph break)
 - Simply closing one <span> and opening another will NOT create a line break
 
 IMPORTANT LINK RULES:
@@ -54,7 +57,7 @@ IMPORTANT LINK RULES:
 
 LinkedIn HTML Structure:
 - Plain text with inline elements ONLY
-- Single line break: <span><br></span>
+- Single line break (next line): <span><br></span>
 - Paragraph break (blank line): <span><br></span><span><br></span>
 - Text content: <span>your text here</span>
 - Bold: <strong>text</strong>
@@ -67,14 +70,14 @@ LinkedIn HTML Structure:
 
 Example with links and line breaks:
 Input: 
-<span>Check out <a href="https://example.com" target="_blank">this link</a></span><span><br></span><span><br></span><span>More info at <a href="https://other.com" target="_blank">here</a></span>
+<span>First line</span><span><br></span><span>Second line (no blank line above)</span><span><br></span><span><br></span><span>Third line (blank line above)</span>
 
-Output (rewritten with preserved links):
-<span>Visit <a href="https://example.com" target="_blank">this site</a></span><span><br></span><span><br></span><span>Find more at <a href="https://other.com" target="_blank">this page</a></span>`;
+Output (rewritten with same break structure):
+<span>My first line</span><span><br></span><span>My second line (no blank line above)</span><span><br></span><span><br></span><span>My third line (blank line above)</span>`;
     
     responseExample = `
 <REWRITE>
-<span>First line with <a href="https://example.com" target="_blank">a link</a></span><span><br></span><span><br></span><span>New paragraph with <strong>bold</strong></span>
+<span>Line one</span><span><br></span><span>Line two (consecutive)</span><span><br></span><span><br></span><span>Line three (with blank line above)</span>
 </REWRITE>`;
   } else {
     formatInstructions = `
