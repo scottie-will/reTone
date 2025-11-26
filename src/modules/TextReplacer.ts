@@ -46,20 +46,38 @@ export class TextReplacer {
     if (!textElement) {
       throw new Error('No text element found in post');
     }
-    
-    const dataset = textElement.dataset as { originalHtml?: string };
-    
-    // Store original HTML if not already stored
+
+    const dataset = textElement.dataset as { originalHtml?: string; originalStyles?: string };
+
+    // Store original HTML and computed styles if not already stored
     if (!dataset.originalHtml) {
       dataset.originalHtml = textElement.innerHTML;
+      // Store inline styles
+      dataset.originalStyles = textElement.getAttribute('style') || '';
     }
-    
+
     // Convert markdown back to HTML
-    const html = marked.parse(newText, { async: false }) as string;
-    
+    let html = marked.parse(newText, { async: false }) as string;
+
+    // Platform-specific handling
+    const siteName = this.adapter.getSiteName();
+
+    if (siteName === 'linkedin') {
+      // LinkedIn: Use spans instead of p tags to match LinkedIn's inline structure
+      html = html
+        .replace(/<p>/g, '<span>')
+        .replace(/<\/p>/g, '</span><br><br>')
+        .replace(/(<br><br>)+$/g, ''); // Remove trailing breaks
+
+      // Wrap content in a span that inherits all parent styles
+      // This ensures font-family, font-size, etc. are preserved from LinkedIn's span[dir="ltr"]
+      html = `<span style="all: inherit; display: inline;">${html}</span>`;
+    }
+    // Reddit and other platforms: Use the HTML as-is, they handle it perfectly
+
     // Replace HTML content
     textElement.innerHTML = html;
-    
+
     // Mark as rewritten
     (post.dataset as { rewritten?: string }).rewritten = 'true';
   }
