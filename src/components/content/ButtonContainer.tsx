@@ -2,8 +2,8 @@ import { createRoot, Root } from 'react-dom/client';
 import RewriteButton from './RewriteButton';
 import LoadingIndicator from './LoadingIndicator';
 import ErrorIndicator from './ErrorIndicator';
-import '../../styles/global.css';
 import { logger } from '../../shared/utils/logger';
+import { createShadowContainer, initializeStylesheet } from '../../shared/utils/shadowDom';
 
 interface ButtonState {
   container: HTMLElement;
@@ -27,11 +27,33 @@ export class ButtonContainer {
   private roots: Map<string, ButtonState> = new Map();
   private loadingIndicators: Map<string, IndicatorState> = new Map();
   private errorIndicators: Map<string, IndicatorState> = new Map();
+  private stylesInitPromise: Promise<void>;
+
+  constructor() {
+    // Initialize styles asynchronously and store the promise
+    this.stylesInitPromise = this.initializeStyles();
+  }
+
+  private async initializeStyles(): Promise<void> {
+    try {
+      await initializeStylesheet();
+      logger.log('[ButtonContainer] Styles initialized for Shadow DOM');
+    } catch (error) {
+      console.error('[ButtonContainer] Failed to initialize styles:', error);
+    }
+  }
+
+  /**
+   * Ensure styles are loaded before proceeding
+   */
+  private async ensureStylesLoaded(): Promise<void> {
+    await this.stylesInitPromise;
+  }
 
   /**
    * Inject React button into a post
    */
-  injectButton(
+  async injectButton(
     postElement: HTMLElement,
     postId: string,
     containerElement: HTMLElement,
@@ -40,19 +62,25 @@ export class ButtonContainer {
     showToggle: boolean = false,
     mode?: import('@/shared/types/messages').RewriteMode,
     platform?: string
-  ): void {
+  ): Promise<void> {
     // Check if button already exists
     if (this.roots.has(postId)) {
       return;
     }
 
-    // Create container (no Shadow DOM - simpler and CSS just works)
+    // Ensure styles are loaded
+    await this.ensureStylesLoaded();
+
+    // Create host element with Shadow DOM for style isolation
     const reactHost = document.createElement('div');
     reactHost.className = 'rewriter-button-host';
     reactHost.style.cssText = 'display: inline-block;';
 
+    // Create shadow root and container
+    const shadowContainer = createShadowContainer(reactHost);
+
     // Create React root and render button
-    const root = createRoot(reactHost);
+    const root = createRoot(shadowContainer);
     root.render(
       <RewriteButton
         onRewrite={onRewrite}
@@ -178,16 +206,23 @@ export class ButtonContainer {
   /**
    * Inject loading indicator into a post
    */
-  injectLoadingIndicator(postId: string, containerElement: HTMLElement): void {
+  async injectLoadingIndicator(postId: string, containerElement: HTMLElement): Promise<void> {
     // Remove any existing indicator for this post
     this.removeLoadingIndicator(postId);
     this.removeErrorIndicator(postId);
 
+    // Ensure styles are loaded
+    await this.ensureStylesLoaded();
+
+    // Create host element with Shadow DOM for style isolation
     const reactHost = document.createElement('div');
     reactHost.className = 'rewriter-loading-host';
     reactHost.style.cssText = 'display: inline-block;';
 
-    const root = createRoot(reactHost);
+    // Create shadow root and container
+    const shadowContainer = createShadowContainer(reactHost);
+
+    const root = createRoot(shadowContainer);
     root.render(<LoadingIndicator />);
 
     this.loadingIndicators.set(postId, { container: reactHost, root });
@@ -235,16 +270,23 @@ export class ButtonContainer {
   /**
    * Inject error indicator into a post
    */
-  injectErrorIndicator(postId: string, containerElement: HTMLElement): void {
+  async injectErrorIndicator(postId: string, containerElement: HTMLElement): Promise<void> {
     // Remove any existing indicator for this post
     this.removeLoadingIndicator(postId);
     this.removeErrorIndicator(postId);
 
+    // Ensure styles are loaded
+    await this.ensureStylesLoaded();
+
+    // Create host element with Shadow DOM for style isolation
     const reactHost = document.createElement('div');
     reactHost.className = 'rewriter-error-host';
     reactHost.style.cssText = 'display: inline-block;';
 
-    const root = createRoot(reactHost);
+    // Create shadow root and container
+    const shadowContainer = createShadowContainer(reactHost);
+
+    const root = createRoot(shadowContainer);
     root.render(<ErrorIndicator />);
 
     this.errorIndicators.set(postId, { container: reactHost, root });

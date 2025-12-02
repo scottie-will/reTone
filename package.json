@@ -1,6 +1,6 @@
 {
   "name": "retone",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Browser extension to rewrite social media posts using local AI",
   "type": "module",
   "private": true,
